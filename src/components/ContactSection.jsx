@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Mail, Phone, MessageSquare, Send, CheckCircle2, AlertCircle } from 'lucide-react'
 
 export default function ContactSection() {
   const [formData, setFormData] = useState({
@@ -48,20 +50,39 @@ export default function ContactSection() {
   }
 
   return (
-    <section id="contact" className="py-16 bg-black text-white">
-      <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold mb-4 text-center">
-          Catering & Enquiries
-        </h2>
-        <p className="text-center text-gray-300 mb-12">
-          Contact us for catering services or any questions
-        </p>
+    <section id="contact" className="section-spacing relative bg-white bg-subtle-pattern">
+      <div className="container mx-auto px-6 md:px-8 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center mb-16"
+        >
+          <div className="flex items-center justify-center gap-3 mb-5">
+            <Mail className="w-8 h-8 text-orange-500" />
+            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 text-premium-title">
+              Catering & Enquiries
+            </h2>
+          </div>
+          <p className="text-lg md:text-xl text-gray-800 text-premium-subtitle">
+            Contact us for catering services or any questions
+          </p>
+        </motion.div>
 
         <div className="max-w-2xl mx-auto">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <motion.form
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            onSubmit={handleSubmit}
+            className="glass-panel space-y-6"
+          >
             <div>
-              <label htmlFor="name" className="block text-sm font-medium mb-2">
-                Name *
+              <label htmlFor="name" className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <span>Name</span>
+                <span className="text-orange-500">*</span>
               </label>
               <input
                 type="text"
@@ -70,13 +91,16 @@ export default function ContactSection() {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-900 text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
+                placeholder="Your name"
               />
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-2">
-                Email *
+              <label htmlFor="email" className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <Mail className="w-4 h-4" />
+                <span>Email</span>
+                <span className="text-orange-500">*</span>
               </label>
               <input
                 type="email"
@@ -85,13 +109,15 @@ export default function ContactSection() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-900 text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
+                placeholder="your.email@example.com"
               />
             </div>
 
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium mb-2">
-                Phone
+              <label htmlFor="phone" className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <Phone className="w-4 h-4" />
+                <span>Phone</span>
               </label>
               <input
                 type="tel"
@@ -99,13 +125,16 @@ export default function ContactSection() {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-900 text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
+                placeholder="(555) 123-4567"
               />
             </div>
 
             <div>
-              <label htmlFor="message" className="block text-sm font-medium mb-2">
-                Message *
+              <label htmlFor="message" className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <MessageSquare className="w-4 h-4" />
+                <span>Message</span>
+                <span className="text-orange-500">*</span>
               </label>
               <textarea
                 id="message"
@@ -113,35 +142,60 @@ export default function ContactSection() {
                 value={formData.message}
                 onChange={handleChange}
                 required
-                rows="5"
-                className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-900 text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                rows="6"
+                className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 resize-none text-base"
+                placeholder="Tell us about your catering needs..."
               />
             </div>
 
-            {submitStatus === 'success' && (
-              <div className="bg-green-600 text-white px-4 py-3 rounded-lg">
-                Thank you! Your message has been sent successfully.
-              </div>
-            )}
+            <AnimatePresence>
+              {submitStatus === 'success' && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="glass-strong bg-green-50 border-2 border-green-200 text-green-800 px-5 py-4 rounded-xl font-medium flex items-center gap-3"
+                >
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span>Thank you! Your message has been sent successfully.</span>
+                </motion.div>
+              )}
 
-            {submitStatus === 'error' && (
-              <div className="bg-red-600 text-white px-4 py-3 rounded-lg">
-                Error submitting form. Please try again.
-              </div>
-            )}
+              {submitStatus === 'error' && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="glass-strong bg-red-50 border-2 border-red-200 text-red-800 px-5 py-4 rounded-xl font-medium flex items-center gap-3"
+                >
+                  <AlertCircle className="w-5 h-5" />
+                  <span>Error submitting form. Please try again.</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            <button
+            <motion.button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              whileHover={{ scale: isSubmitting ? 1 : 1.02, y: -2 }}
+              whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
+              className="w-full glass-button !bg-yellow-400 hover:!bg-yellow-500 active:!bg-yellow-500 text-black py-4 text-lg font-bold rounded-xl shadow-md shadow-yellow-400/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2"
             >
-              {isSubmitting ? 'Sending...' : 'Send Message'}
-            </button>
-          </form>
+              {isSubmitting ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                  <span>Sending...</span>
+                </>
+              ) : (
+                <>
+                  <Send className="w-5 h-5" />
+                  <span>Send Message</span>
+                </>
+              )}
+            </motion.button>
+          </motion.form>
         </div>
       </div>
     </section>
   )
 }
-
-

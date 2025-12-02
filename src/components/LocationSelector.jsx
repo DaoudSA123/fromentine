@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { MapPin, Phone, Loader2 } from 'lucide-react'
 import { createBrowserClient } from '@/lib/supabase'
 import { getCurrentLocation, findNearestLocation } from '@/lib/geolocation'
 
@@ -69,30 +71,54 @@ export default function LocationSelector({ selectedLocation, onLocationChange })
 
   if (loading) {
     return (
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Loading locations...
-        </label>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="glass-panel mb-8"
+      >
+        <div className="flex items-center gap-3">
+          <Loader2 className="w-5 h-5 animate-spin text-orange-500" />
+          <label className="block text-sm font-semibold text-gray-900">
+            Loading locations...
+          </label>
+        </div>
+      </motion.div>
     )
   }
 
   return (
-    <div className="mb-6">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="glass-panel mb-12"
+    >
       <label
         htmlFor="location-select"
-        className="block text-sm font-medium text-gray-700 mb-2"
+        className="block text-base font-semibold text-gray-900 mb-4 flex items-center gap-2"
       >
+        <MapPin className="w-5 h-5 text-orange-500" />
         Select Location
       </label>
-      {geolocationError && (
-        <p className="text-sm text-orange-500 mb-2">{geolocationError}</p>
-      )}
+      
+      <AnimatePresence>
+        {geolocationError && (
+          <motion.p
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="text-sm text-orange-500 mb-4 font-medium bg-orange-50 px-4 py-2 rounded-lg"
+          >
+            {geolocationError}
+          </motion.p>
+        )}
+      </AnimatePresence>
+      
       <select
         id="location-select"
         value={selectedLocation?.id || ''}
         onChange={handleManualSelect}
-        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+        className="w-full px-5 py-4 glass rounded-xl text-gray-900 font-medium focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
         aria-label="Select restaurant location"
       >
         {locations.map((location) => (
@@ -101,12 +127,31 @@ export default function LocationSelector({ selectedLocation, onLocationChange })
           </option>
         ))}
       </select>
-      {selectedLocation && (
-        <p className="mt-2 text-sm text-gray-600">
-          📍 {selectedLocation.address} | 📞 {selectedLocation.phone}
-        </p>
-      )}
-    </div>
+      
+      <AnimatePresence>
+        {selectedLocation && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: 'auto' }}
+            exit={{ opacity: 0, y: -10, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mt-6 p-5 glass rounded-xl space-y-3"
+          >
+            <div className="flex items-start gap-3">
+              <MapPin className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-gray-900 leading-relaxed">
+                {selectedLocation.address}
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <Phone className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-gray-900 leading-relaxed">
+                {selectedLocation.phone}
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   )
 }
-

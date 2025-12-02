@@ -9,7 +9,20 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
+  background: linear-gradient(135deg, #2a1a0a 0%, #4d2a1a 25%, #1a0a00 50%, #2a1a0a 75%, #4d2a1a 100%);
+  min-height: 100vh;
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  font-feature-settings: "kern" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* Smooth scrolling */
@@ -19,8 +32,136 @@ html {
 
 /* Focus styles for accessibility */
 *:focus-visible {
-  outline: 2px solid #F97316;
+  outline: 2px solid #FACC15;
   outline-offset: 2px;
 }
 
+/* Remove default blue link colors */
+a {
+  color: inherit;
+}
 
+a:hover {
+  color: inherit;
+}
+
+/* Premium Glassmorphism utility classes */
+@layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08), 
+                0 2px 8px 0 rgba(0, 0, 0, 0.04),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+  }
+  
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.12),
+                0 4px 12px 0 rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.6);
+  }
+  
+  .glass-dark {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .glass-panel {
+    @apply glass rounded-3xl p-8 transition-all duration-500 ease-out;
+    box-shadow: 0 20px 60px -12px rgba(0, 0, 0, 0.1),
+                0 8px 24px -8px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+  }
+  
+  .glass-panel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 24px 72px -12px rgba(0, 0, 0, 0.15),
+                0 12px 32px -8px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.6);
+  }
+  
+  .glass-button {
+    @apply rounded-xl px-6 py-3 font-semibold transition-all duration-300 ease-out border border-transparent;
+    letter-spacing: 0.01em;
+  }
+  
+  .glass-button:not([class*="bg-yellow"]):not([class*="bg-orange"]) {
+    @apply glass;
+  }
+  
+  .glass-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+  
+  .glass-button:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  
+  .glass {
+    @apply transition-all duration-300 ease-out;
+  }
+  
+  .glass:hover {
+    border-color: rgba(250, 204, 21, 0.4);
+  }
+  
+  /* Premium card elevation */
+  .card-elevated {
+    box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.1),
+                0 2px 8px -2px rgba(0, 0, 0, 0.06);
+  }
+  
+  .card-elevated:hover {
+    box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.15),
+                0 4px 16px -4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Premium text styles */
+  .text-premium-title {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  
+  .text-premium-subtitle {
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+  }
+  
+  /* Subtle background patterns */
+  .bg-subtle-pattern {
+    background-image: 
+      radial-gradient(circle at 20% 50%, rgba(250, 204, 21, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(249, 115, 22, 0.03) 0%, transparent 50%);
+  }
+  
+  /* Premium section spacing */
+  .section-spacing {
+    @apply py-24 md:py-32;
+  }
+  
+  /* Smooth fade-in animation */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+}

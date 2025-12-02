@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { createBrowserClient } from '@/lib/supabase'
 
 const STATUS_STEPS = [
@@ -148,7 +149,13 @@ export default function TrackOrder({ orderId }) {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
-        <p className="text-gray-600">Loading order details...</p>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+            className="text-gray-700 text-lg"
+        >
+          Loading order details...
+        </motion.p>
       </div>
     )
   }
@@ -156,7 +163,13 @@ export default function TrackOrder({ orderId }) {
   if (error || !order) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
-        <p className="text-red-600">{error || 'Order not found'}</p>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-red-600 text-lg font-medium"
+        >
+          {error || 'Order not found'}
+        </motion.p>
       </div>
     )
   }
@@ -165,20 +178,39 @@ export default function TrackOrder({ orderId }) {
   const totalDollars = (order.total_cents / 100).toFixed(2)
 
   return (
-    <div className="container mx-auto px-4 py-16 max-w-4xl">
-      <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-        <h1 className="text-3xl font-bold text-black mb-2">Order Tracking</h1>
-        <p className="text-gray-600 mb-4">
-          Order ID: <span className="font-mono font-semibold">{getOrderToken(order.id)}</span>
+    <div className="container mx-auto px-4 py-16 max-w-4xl space-y-6">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="glass-panel"
+      >
+        <h1 className="text-4xl font-bold text-gray-800 mb-3">Order Tracking</h1>
+        <p className="text-gray-700 mb-3">
+          Order ID: <span className="font-mono font-semibold text-gray-800">{getOrderToken(order.id)}</span>
         </p>
-        {realtimeConnected && (
-          <p className="text-sm text-green-600 mb-4">✓ Live updates enabled</p>
-        )}
-      </div>
+        <AnimatePresence>
+          {realtimeConnected && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-sm text-green-600 font-medium"
+            >
+              ✓ Live updates enabled
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </motion.div>
 
       {/* Status Stepper */}
-      <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-        <h2 className="text-2xl font-bold text-black mb-6">Order Status</h2>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="glass-panel"
+      >
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Order Status</h2>
         <div className="space-y-4">
           {STATUS_STEPS.map((step, index) => {
             const stepIndex = STATUS_ORDER[step.key]
@@ -186,88 +218,107 @@ export default function TrackOrder({ orderId }) {
             const isCurrent = stepIndex === currentStatusIndex
 
             return (
-              <div key={step.key} className="flex items-center">
-                <div
-                  className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold ${
+              <motion.div
+                key={step.key}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="flex items-center"
+              >
+                <motion.div
+                  animate={{
+                    scale: isCurrent ? [1, 1.1, 1] : 1,
+                  }}
+                  transition={{ duration: 0.3 }}
+                  className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
                     isActive
-                      ? 'bg-orange-500 text-white'
-                      : 'bg-gray-200 text-gray-600'
+                      ? 'bg-gradient-to-br from-orange-500 to-yellow-500 text-white'
+                      : 'glass text-gray-600'
                   }`}
                 >
                   {isActive ? '✓' : index + 1}
-                </div>
+                </motion.div>
                 <div className="ml-4 flex-1">
                   <p
-                    className={`font-semibold ${
-                      isCurrent ? 'text-orange-500' : isActive ? 'text-black' : 'text-gray-400'
+                    className={`font-semibold text-lg ${
+                      isCurrent
+                        ? 'bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent'
+                        : isActive
+                        ? 'text-gray-800'
+                        : 'text-gray-400'
                     }`}
                   >
                     {step.label}
                   </p>
                   {isCurrent && order.updated_at && (
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 mt-1">
                       Updated: {formatDate(order.updated_at)}
                     </p>
                   )}
                 </div>
-              </div>
+              </motion.div>
             )
           })}
         </div>
-      </div>
+      </motion.div>
 
       {/* Order Details */}
-      <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-        <h2 className="text-2xl font-bold text-black mb-4">Order Details</h2>
-        <div className="space-y-2 mb-4">
-          <p>
-            <span className="font-semibold">Customer:</span> {order.customer_name}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="glass-panel"
+      >
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Order Details</h2>
+        <div className="space-y-3 mb-6">
+          <p className="text-gray-700">
+            <span className="font-semibold text-gray-800">Customer:</span> {order.customer_name}
           </p>
-          <p>
-            <span className="font-semibold">Phone:</span> {order.customer_phone}
+          <p className="text-gray-700">
+            <span className="font-semibold text-gray-800">Phone:</span> {order.customer_phone}
           </p>
-          <p>
-            <span className="font-semibold">Type:</span>{' '}
+          <p className="text-gray-700">
+            <span className="font-semibold text-gray-800">Type:</span>{' '}
             {order.type === 'pickup' ? 'Pickup' : 'Delivery'}
           </p>
           {order.customer_address && (
-            <p>
-              <span className="font-semibold">Address:</span> {order.customer_address}
+            <p className="text-gray-700">
+              <span className="font-semibold text-gray-800">Address:</span> {order.customer_address}
             </p>
           )}
           {location && (
-            <p>
-              <span className="font-semibold">Location:</span> {location.name}
+            <p className="text-gray-700">
+              <span className="font-semibold text-gray-800">Location:</span> {location.name}
             </p>
           )}
-          <p>
-            <span className="font-semibold">Order Date:</span>{' '}
+          <p className="text-gray-700">
+            <span className="font-semibold text-gray-800">Order Date:</span>{' '}
             {formatDate(order.created_at)}
           </p>
         </div>
 
-        <div className="border-t border-gray-200 pt-4">
-          <h3 className="font-semibold text-black mb-2">Items:</h3>
-          <div className="space-y-2">
+        <div className="border-t border-gray-300 pt-6">
+          <h3 className="font-semibold text-gray-800 mb-4 text-lg">Items:</h3>
+          <div className="space-y-2 mb-6">
             {orderItems.map((item) => (
-              <div key={item.id} className="flex justify-between">
-                <span>
+              <div key={item.id} className="flex justify-between glass rounded-xl p-3">
+                <span className="text-gray-700">
                   {item.products?.name || 'Product'} × {item.quantity}
                 </span>
-                <span className="font-semibold">
+                <span className="font-semibold text-gray-800">
                   ${((item.price_cents * item.quantity) / 100).toFixed(2)}
                 </span>
               </div>
             ))}
           </div>
-          <div className="border-t border-gray-200 mt-4 pt-4 flex justify-between text-xl font-bold">
-            <span>Total:</span>
-            <span className="text-orange-500">${totalDollars}</span>
+          <div className="border-t border-gray-300 pt-4 flex justify-between text-2xl font-bold">
+            <span className="text-gray-800">Total:</span>
+            <span className="text-orange-500 font-bold">
+              ${totalDollars}
+            </span>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }
-
-

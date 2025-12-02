@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { createBrowserClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import AdminOrders from '@/components/AdminOrders'
@@ -72,24 +73,34 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-600">Loading...</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-neutral-600 text-lg"
+        >
+          Loading...
+        </motion.p>
       </div>
     )
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
-          <h1 className="text-3xl font-bold text-black mb-6 text-center">
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-panel max-w-md w-full"
+        >
+          <h1 className="text-4xl font-bold text-white mb-8 text-center">
             Admin Login
           </h1>
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-6">
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-semibold text-white mb-2"
               >
                 Email
               </label>
@@ -99,13 +110,13 @@ export default function AdminPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full px-4 py-3 glass rounded-xl text-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all duration-300"
               />
             </div>
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-semibold text-white mb-2"
               >
                 Password
               </label>
@@ -115,43 +126,51 @@ export default function AdminPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full px-4 py-3 glass rounded-xl text-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all duration-300"
               />
             </div>
             {loginError && (
-              <div className="bg-red-100 text-red-700 px-4 py-3 rounded-lg">
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass-strong bg-red-500/20 border-red-500/50 text-red-700 px-4 py-3 rounded-xl font-medium"
+              >
                 {loginError}
-              </div>
+              </motion.div>
             )}
-            <button
+            <motion.button
               type="submit"
               disabled={isLoggingIn}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
+              whileHover={{ scale: isLoggingIn ? 1 : 1.02 }}
+              whileTap={{ scale: isLoggingIn ? 1 : 0.98 }}
+              className="w-full glass-button bg-orange-500 hover:bg-yellow-400 active:bg-yellow-400 text-white hover:text-black active:text-black py-4 text-lg font-bold disabled:opacity-50 transition-all duration-300"
             >
               {isLoggingIn ? 'Logging in...' : 'Login'}
-            </button>
+            </motion.button>
           </form>
-          <p className="mt-4 text-sm text-gray-600 text-center">
+          <p className="mt-6 text-sm text-white/80 text-center">
             Create an admin user via Supabase Auth dashboard
           </p>
-        </div>
+        </motion.div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-black text-white py-4">
+    <div className="min-h-screen">
+      <div className="glass-dark py-4 mb-8">
         <div className="container mx-auto px-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+          <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
           <div className="flex items-center gap-4">
-            <span className="text-sm">{user.email}</span>
-            <button
+            <span className="text-sm text-white/80">{user.email}</span>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={handleLogout}
-              className="bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded-lg font-semibold transition-colors"
+              className="glass-button bg-orange-500 hover:bg-yellow-400 active:bg-yellow-400 text-white hover:text-black active:text-black px-6 py-2 font-semibold transition-all duration-300"
             >
               Logout
-            </button>
+            </motion.button>
           </div>
         </div>
       </div>
@@ -161,5 +180,3 @@ export default function AdminPage() {
     </div>
   )
 }
-
-

@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ShoppingCart, X, Plus, Minus, User, Phone, MapPin, CreditCard } from 'lucide-react'
 import {
   getCart,
   removeFromCart,
@@ -68,63 +70,111 @@ export default function Cart({ cart, onCartUpdate, onCheckout }) {
 
   if (cart.length === 0) {
     return (
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h2 className="text-2xl font-bold text-black mb-4">Your Cart</h2>
-        <p className="text-gray-600">Your cart is empty</p>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="glass-panel text-center py-12"
+      >
+        <ShoppingCart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-gray-900 mb-3">Your Cart</h2>
+        <p className="text-gray-700">Your cart is empty</p>
+      </motion.div>
     )
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6">
-      <h2 className="text-2xl font-bold text-black mb-4">Your Cart ({itemCount} items)</h2>
-
-      <div className="space-y-3 mb-6">
-        {cart.map((item) => (
-          <div
-            key={item.product_id}
-            className="flex items-center justify-between border-b border-gray-200 pb-3"
-          >
-            <div className="flex-1">
-              <p className="font-semibold text-black">{item.name}</p>
-              <p className="text-sm text-gray-600">
-                ${((item.price_cents * item.quantity) / 100).toFixed(2)}
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                min="1"
-                value={item.quantity}
-                onChange={(e) =>
-                  handleQuantityChange(item.product_id, e.target.value)
-                }
-                className="w-16 px-2 py-1 border border-gray-300 rounded text-center"
-                aria-label={`Quantity for ${item.name}`}
-              />
-              <button
-                onClick={() => handleRemoveItem(item.product_id)}
-                className="text-red-500 hover:text-red-700"
-                aria-label={`Remove ${item.name} from cart`}
-              >
-                ✕
-              </button>
-            </div>
-          </div>
-        ))}
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="glass-panel"
+    >
+      <div className="flex items-center gap-3 mb-8">
+        <ShoppingCart className="w-6 h-6 text-orange-500" />
+        <h2 className="text-3xl font-bold text-gray-900 text-premium-title">
+          Your Cart
+        </h2>
+        <span className="text-lg text-gray-600 font-medium">({itemCount} {itemCount === 1 ? 'item' : 'items'})</span>
       </div>
 
-      <div className="mb-6">
-        <div className="flex justify-between items-center text-xl font-bold text-black mb-4">
-          <span>Total:</span>
-          <span className="text-orange-500">${totalDollars}</span>
+      <div className="space-y-4 mb-8">
+        <AnimatePresence>
+          {cart.map((item) => (
+            <motion.div
+              key={item.product_id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3 }}
+              className="flex items-center justify-between glass rounded-xl p-4 group"
+            >
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-gray-900 text-lg mb-1">{item.name}</p>
+                <p className="text-sm text-gray-700">
+                  ${((item.price_cents * item.quantity) / 100).toFixed(2)}
+                </p>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 glass rounded-lg p-1">
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => handleQuantityChange(item.product_id, Math.max(1, item.quantity - 1))}
+                    className="p-1 text-gray-700 hover:text-gray-900 transition-colors"
+                    aria-label="Decrease quantity"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </motion.button>
+                  <input
+                    type="number"
+                    min="1"
+                    value={item.quantity}
+                    onChange={(e) =>
+                      handleQuantityChange(item.product_id, Math.max(1, parseInt(e.target.value) || 1))
+                    }
+                    className="w-12 px-2 py-1 glass rounded text-center font-semibold text-gray-900 focus:ring-2 focus:ring-orange-500 focus:outline-none text-sm"
+                    aria-label={`Quantity for ${item.name}`}
+                  />
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => handleQuantityChange(item.product_id, item.quantity + 1)}
+                    className="p-1 text-gray-700 hover:text-gray-900 transition-colors"
+                    aria-label="Increase quantity"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </motion.button>
+                </div>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => handleRemoveItem(item.product_id)}
+                  className="text-red-500 hover:text-red-600 font-bold text-xl w-8 h-8 flex items-center justify-center transition-colors"
+                  aria-label={`Remove ${item.name} from cart`}
+                >
+                  <X className="w-5 h-5" />
+                </motion.button>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+
+      <div className="mb-8 p-6 glass-strong rounded-2xl border-2 border-orange-200">
+        <div className="flex justify-between items-center">
+          <span className="text-2xl font-bold text-gray-900">Total:</span>
+          <span className="text-3xl font-bold text-orange-500">
+            ${totalDollars}
+          </span>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="customer-name" className="block text-sm font-medium text-gray-700 mb-1">
-            Name *
+          <label htmlFor="customer-name" className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+            <User className="w-4 h-4" />
+            <span>Name</span>
+            <span className="text-orange-500">*</span>
           </label>
           <input
             type="text"
@@ -132,13 +182,16 @@ export default function Cart({ cart, onCartUpdate, onCheckout }) {
             value={customerName}
             onChange={(e) => setCustomerName(e.target.value)}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
+            placeholder="Your name"
           />
         </div>
 
         <div>
-          <label htmlFor="customer-phone" className="block text-sm font-medium text-gray-700 mb-1">
-            Phone *
+          <label htmlFor="customer-phone" className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+            <Phone className="w-4 h-4" />
+            <span>Phone</span>
+            <span className="text-orange-500">*</span>
           </label>
           <input
             type="tel"
@@ -146,64 +199,86 @@ export default function Cart({ cart, onCartUpdate, onCheckout }) {
             value={customerPhone}
             onChange={(e) => setCustomerPhone(e.target.value)}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
+            placeholder="(555) 123-4567"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Order Type *
+          <label className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+            <MapPin className="w-4 h-4" />
+            <span>Order Type</span>
           </label>
           <div className="flex gap-4">
-            <label className="flex items-center">
+            <label className="flex items-center cursor-pointer group">
               <input
                 type="radio"
                 value="pickup"
                 checked={orderType === 'pickup'}
                 onChange={(e) => setOrderType(e.target.value)}
-                className="mr-2"
+                className="mr-3 w-5 h-5 accent-orange-500 cursor-pointer"
               />
-              Pickup
+              <span className="text-gray-900 font-medium group-hover:text-orange-500 transition-colors">Pickup</span>
             </label>
-            <label className="flex items-center">
+            <label className="flex items-center cursor-pointer group">
               <input
                 type="radio"
                 value="delivery"
                 checked={orderType === 'delivery'}
                 onChange={(e) => setOrderType(e.target.value)}
-                className="mr-2"
+                className="mr-3 w-5 h-5 accent-orange-500 cursor-pointer"
               />
-              Delivery
+              <span className="text-gray-900 font-medium group-hover:text-orange-500 transition-colors">Delivery</span>
             </label>
           </div>
         </div>
 
-        {orderType === 'delivery' && (
-          <div>
-            <label htmlFor="customer-address" className="block text-sm font-medium text-gray-700 mb-1">
-              Delivery Address *
-            </label>
-            <textarea
-              id="customer-address"
-              value={customerAddress}
-              onChange={(e) => setCustomerAddress(e.target.value)}
-              required={orderType === 'delivery'}
-              rows="3"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-            />
-          </div>
-        )}
+        <AnimatePresence>
+          {orderType === 'delivery' && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <label htmlFor="customer-address" className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                <span>Delivery Address</span>
+                <span className="text-orange-500">*</span>
+              </label>
+              <textarea
+                id="customer-address"
+                value={customerAddress}
+                onChange={(e) => setCustomerAddress(e.target.value)}
+                required={orderType === 'delivery'}
+                rows="3"
+                className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 resize-none text-base"
+                placeholder="Street address, city, zip code"
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        <button
+        <motion.button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          whileHover={{ scale: isSubmitting ? 1 : 1.02, y: -2 }}
+          whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
+          className="w-full glass-button !bg-yellow-400 hover:!bg-yellow-500 active:!bg-yellow-500 text-black py-5 text-lg font-bold rounded-xl shadow-lg shadow-yellow-400/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-3"
         >
-          {isSubmitting ? 'Placing Order...' : 'Place Order'}
-        </button>
+          {isSubmitting ? (
+            <>
+              <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+              <span>Placing Order...</span>
+            </>
+          ) : (
+            <>
+              <CreditCard className="w-5 h-5" />
+              <span>Place Order</span>
+            </>
+          )}
+        </motion.button>
       </form>
-    </div>
+    </motion.div>
   )
 }
-
-
