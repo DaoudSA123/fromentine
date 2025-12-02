@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { createBrowserClient } from '@/lib/supabase'
 
 const STATUS_OPTIONS = [
@@ -72,7 +73,6 @@ export default function AdminOrders() {
         throw new Error('Failed to update order status')
       }
 
-      // Refresh orders
       await fetchOrders()
     } catch (error) {
       console.error('Error updating order status:', error)
@@ -97,7 +97,6 @@ export default function AdminOrders() {
         throw new Error('Failed to update inventory')
       }
 
-      // Refresh products
       await fetchProducts()
     } catch (error) {
       console.error('Error updating inventory:', error)
@@ -117,76 +116,94 @@ export default function AdminOrders() {
   }
 
   if (loading) {
-    return <p className="text-center text-gray-600">Loading...</p>
+    return (
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+            className="text-center text-white/80 text-lg"
+      >
+        Loading...
+      </motion.p>
+    )
   }
 
   return (
     <div className="space-y-8">
       {/* Orders Section */}
-      <div>
-        <h2 className="text-2xl font-bold text-black mb-4">Orders</h2>
-        <div className="bg-white rounded-lg shadow overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="glass-panel"
+      >
+        <h2 className="text-3xl font-bold text-white mb-6">Orders</h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead>
+              <tr className="border-b border-white/20">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
                   Order ID
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
                   Customer
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
                   Location
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
                   Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
                   Total
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
                   Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {orders.map((order) => (
-                <tr key={order.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-mono">
+            <tbody className="divide-y divide-white/10">
+              {orders.map((order, index) => (
+                <motion.tr
+                  key={order.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="hover:bg-white/5 transition-colors"
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-white/90">
                     {order.id.substring(0, 8)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/90">
                     {order.customer_name}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/90">
                     {order.locations?.name || 'N/A'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/90">
                     {order.type}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-white">
                     ${(order.total_cents / 100).toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
-                      className={`px-2 py-1 text-xs font-semibold rounded ${
+                      className={`px-3 py-1 text-xs font-semibold rounded-full ${
                         order.status === 'COMPLETED'
-                          ? 'bg-green-100 text-green-800'
+                          ? 'bg-green-500/20 text-green-400 border border-green-500/30'
                           : order.status === 'CANCELLED'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-yellow-100 text-yellow-800'
+                          ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                          : 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
                       }`}
                     >
                       {order.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/60">
                     {formatDate(order.created_at)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -194,7 +211,7 @@ export default function AdminOrders() {
                       value={order.status}
                       onChange={(e) => updateOrderStatus(order.id, e.target.value)}
                       disabled={updatingStatus === order.id}
-                      className="border border-gray-300 rounded px-2 py-1 text-sm"
+                      className="glass rounded-lg px-3 py-2 text-sm text-white font-medium focus:ring-2 focus:ring-orange-500 focus:outline-none"
                     >
                       {STATUS_OPTIONS.map((status) => (
                         <option key={status} value={status}>
@@ -203,50 +220,61 @@ export default function AdminOrders() {
                       ))}
                     </select>
                   </td>
-                </tr>
+                </motion.tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
+      </motion.div>
 
       {/* Inventory Section */}
-      <div>
-        <h2 className="text-2xl font-bold text-black mb-4">Inventory Management</h2>
-        <div className="bg-white rounded-lg shadow overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="glass-panel"
+      >
+        <h2 className="text-3xl font-bold text-white mb-6">Inventory Management</h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead>
+              <tr className="border-b border-white/20">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
                   Product
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
                   Category
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
                   Price
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
                   Inventory Count
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {products.map((product) => (
-                <tr key={product.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">
+            <tbody className="divide-y divide-white/10">
+              {products.map((product, index) => (
+                <motion.tr
+                  key={product.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="hover:bg-white/5 transition-colors"
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-white">
                     {product.name}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/90">
                     {product.category}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/90">
                     ${(product.price_cents / 100).toFixed(2)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-white">
                     {product.inventory_count}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -260,17 +288,15 @@ export default function AdminOrders() {
                         }
                       }}
                       disabled={updatingInventory === product.id}
-                      className="border border-gray-300 rounded px-2 py-1 w-24 text-sm"
+                      className="glass rounded-lg px-3 py-2 w-24 text-sm text-white font-medium focus:ring-2 focus:ring-orange-500 focus:outline-none"
                     />
                   </td>
-                </tr>
+                </motion.tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }
-
-

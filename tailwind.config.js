@@ -10,10 +10,17 @@ module.exports = {
       colors: {
         primary: {
           black: '#000000',
-          yellow: '#FACC15',
           white: '#FFFFFF',
           orange: '#F97316',
+          yellow: '#FACC15',
         },
+      },
+      backdropBlur: {
+        xs: '2px',
+      },
+      boxShadow: {
+        'glass': 'none',
+        'glass-lg': 'none',
       },
     },
   },
