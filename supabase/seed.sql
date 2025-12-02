@@ -18,16 +18,16 @@ INSERT INTO products (id, name, description, price_cents, category, image_url, i
   -- Grocery items
   ('eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', 'Fresh Bread Loaf', 'Artisan bread baked daily', 599, 'groceries', NULL, 100),
   ('ffffffff-ffff-ffff-ffff-ffffffffffff', 'Organic Eggs (12pk)', 'Farm-fresh organic eggs', 699, 'groceries', NULL, 80),
-  ('gggggggg-gggg-gggg-gggg-gggggggggggg', 'Fresh Vegetables Bundle', 'Seasonal fresh vegetables', 899, 'groceries', NULL, 60),
+  ('00000000-0000-0000-0000-000000000001', 'Fresh Vegetables Bundle', 'Seasonal fresh vegetables', 899, 'groceries', NULL, 60),
   
   -- Drink item
-  ('hhhhhhhh-hhhh-hhhh-hhhh-hhhhhhhhhhhh', 'House Wine Bottle', 'Premium house wine selection', 2499, 'drinks', NULL, 35)
+  ('00000000-0000-0000-0000-000000000002', 'House Wine Bottle', 'Premium house wine selection', 2499, 'drinks', NULL, 35)
 ON CONFLICT (id) DO NOTHING;
 
 -- Insert sample promotions
 INSERT INTO promotions (id, title, description, starts_at, ends_at, image_url) VALUES
-  ('pppppppp-pppp-pppp-pppp-pppppppppppp', 'Weekend Special', '20% off all pizzas this weekend!', NOW() - INTERVAL '1 day', NOW() + INTERVAL '3 days', NULL),
-  ('qqqqqqqq-qqqq-qqqq-qqqq-qqqqqqqqqqqq', 'Happy Hour', 'Buy one burger, get one free (4pm-6pm daily)', NOW() - INTERVAL '1 hour', NOW() + INTERVAL '1 hour', NULL)
+  ('00000000-0000-0000-0000-000000000010', 'Weekend Special', '20% off all pizzas this weekend!', NOW() - INTERVAL '1 day', NOW() + INTERVAL '3 days', NULL),
+  ('00000000-0000-0000-0000-000000000011', 'Happy Hour', 'Buy one burger, get one free (4pm-6pm daily)', NOW() - INTERVAL '1 hour', NOW() + INTERVAL '1 hour', NULL)
 ON CONFLICT (id) DO NOTHING;
 
 -- Note: Admin users are created via Supabase Auth dashboard
