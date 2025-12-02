@@ -140,28 +140,28 @@ export default function AdminOrders() {
           <table className="min-w-full">
             <thead>
               <tr className="border-b border-white/20">
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
                   Order ID
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
                   Customer
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
                   Location
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
                   Type
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
                   Total
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
                   Date
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -239,19 +239,19 @@ export default function AdminOrders() {
           <table className="min-w-full">
             <thead>
               <tr className="border-b border-white/20">
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
                   Product
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
                   Category
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
                   Price
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
                   Inventory Count
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider"
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
