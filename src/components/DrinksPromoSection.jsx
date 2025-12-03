@@ -8,8 +8,8 @@ export default function DrinksPromoSection() {
   const DRINKS_URL = 'https://drinks.example.com'
 
   return (
-    <section id="drinks" className="section-spacing relative bg-yellow-400">
-      <div className="container mx-auto px-6 md:px-8 text-center relative z-10">
+    <section id="drinks" className="relative overflow-hidden w-full h-full flex items-center justify-center">
+      <div className="w-full max-w-2xl mx-auto px-6 md:px-8 text-center relative z-10 py-4 lg:py-2">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

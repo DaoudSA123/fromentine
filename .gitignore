@@ -35,4 +35,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Large video files - host externally
+public/images/videos/MVI_5110.MOV
+public/images/videos/MVI_5112.MOV
+public/images/videos/sora-2_Create_a_cinematic_slow-motion_animation_starting_from_the_provided_image_of_a_g-0.mp4
+
 

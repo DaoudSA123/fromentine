@@ -28,6 +28,12 @@ body {
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 0;
+}
+
+/* Ensure page starts at top */
+html, body {
+  scroll-margin-top: 0;
 }
 
 /* Focus styles for accessibility */
