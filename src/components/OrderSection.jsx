@@ -22,9 +22,8 @@ export default function OrderSection() {
     offset: ['start center', 'end center']
   })
   
-  // Rotate images based on scroll - start at 0 (straight) and rotate as you scroll
-  const rotateLeft = useTransform(scrollYProgress, [0, 0.5, 1], [0, 180, 360])
-  const rotateRight = useTransform(scrollYProgress, [0, 0.5, 1], [0, -180, -360])
+  // Rotate image based on scroll - start at 0 (straight) and rotate as you scroll
+  const topRotate = useTransform(scrollYProgress, [0, 0.5, 1], [0, 180, 360])
 
   useEffect(() => {
     // Load cart from localStorage
@@ -101,50 +100,41 @@ export default function OrderSection() {
       id="order" 
       ref={sectionRef} 
       className="section-spacing relative bg-white bg-subtle-pattern"
+      style={{ paddingTop: '2rem', paddingBottom: '6rem' }}
     >
       <div className="container mx-auto px-6 md:px-8 relative z-10">
+        {/* Top rotating image */}
+        <div className="flex justify-center mb-6">
+          <motion.div
+            style={{ rotate: topRotate }}
+            className="w-80 h-80 md:w-[384px] md:h-[384px] lg:w-[500px] lg:h-[500px] flex-shrink-0"
+          >
+            <img
+              src="/images/rotatingBowl.png"
+              alt="Food decoration"
+              className="w-full h-full object-contain drop-shadow-lg"
+            />
+          </motion.div>
+        </div>
+        
         {/* Premium Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="flex items-center justify-center gap-6 md:gap-10 mb-16"
+          className="flex items-center justify-center mb-16"
         >
-          {/* Left image */}
-          <motion.div
-            style={{ rotate: rotateLeft }}
-            className="hidden md:block w-28 h-28 lg:w-36 lg:h-36 flex-shrink-0"
-          >
-            <img
-              src="/images/Soul entreprise-14.png"
-              alt="Food decoration"
-              className="w-full h-full object-contain drop-shadow-lg"
-            />
-          </motion.div>
-          
           {/* Heading */}
           <motion.h2
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 text-premium-title text-center"
+            className="text-3xl md:text-6xl lg:text-7xl font-bold text-gray-900 text-premium-title text-center"
           >
             Order Food
           </motion.h2>
-          
-          {/* Right image */}
-          <motion.div
-            style={{ rotate: rotateRight }}
-            className="hidden md:block w-28 h-28 lg:w-36 lg:h-36 flex-shrink-0"
-          >
-            <img
-              src="/images/Soul entreprise-09.png"
-              alt="Food decoration"
-              className="w-full h-full object-contain drop-shadow-lg"
-            />
-          </motion.div>
         </motion.div>
 
         {/* Location Selector */}
@@ -186,6 +176,46 @@ export default function OrderSection() {
             ))}
           </div>
         )}
+
+        {/* Video Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="w-full mb-20 rounded-2xl overflow-hidden shadow-lg flex gap-2"
+          style={{ height: '250px' }}
+        >
+          {/* First Video */}
+          <div className="flex-1 h-full overflow-hidden">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+            >
+              <source src="/images/videos/MVI_5110.MOV" type="video/quicktime" />
+              <source src="/images/videos/MVI_5110.MOV" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          
+          {/* Second Video */}
+          <div className="flex-1 h-full overflow-hidden">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+            >
+              <source src="/images/videos/MVI_5112.MOV" type="video/quicktime" />
+              <source src="/images/videos/MVI_5112.MOV" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </motion.div>
 
         {/* Cart */}
         <div className="max-w-2xl mx-auto">

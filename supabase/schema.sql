@@ -125,3 +125,5 @@ CREATE POLICY "Public can insert catering contacts" ON catering_contacts
 ALTER PUBLICATION supabase_realtime ADD TABLE orders;
 
 
+
+
