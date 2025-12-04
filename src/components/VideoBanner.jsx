@@ -1,58 +1,34 @@
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 
 export default function VideoBanner() {
-  const videoRef = useRef(null)
-  const [aspectRatio, setAspectRatio] = useState(null)
-
-  useEffect(() => {
-    const video = videoRef.current
-    if (!video) return
-
-    const handleLoadedMetadata = () => {
-      if (video.videoWidth && video.videoHeight) {
-        const ratio = video.videoWidth / video.videoHeight
-        setAspectRatio(ratio)
-      }
-    }
-
-    video.addEventListener('loadedmetadata', handleLoadedMetadata)
-    
-    // If metadata is already loaded
-    if (video.readyState >= 1) {
-      handleLoadedMetadata()
-    }
-
-    return () => {
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata)
-    }
-  }, [])
-
   return (
-    <div 
-      className="w-full h-full flex items-center justify-center p-2 lg:p-4"
-      style={aspectRatio ? { aspectRatio: aspectRatio.toString() } : { minHeight: '300px' }}
-    >
-      <video
-        ref={videoRef}
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        className="w-full h-auto max-w-full object-contain"
-        style={{
-          imageRendering: 'high-quality',
-          WebkitImageRendering: 'high-quality'
-        }}
+    <div className="w-full h-full flex items-center justify-center p-4 md:p-6 lg:p-8">
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full h-full flex items-center justify-center"
       >
-        <source 
-          src="/images/videos/sora-2_Create_a_cinematic_slow-motion_animation_starting_from_the_provided_image_of_a_g-0.mp4" 
-          type="video/mp4" 
+        <img
+          src="/images/bissap.webp"
+          alt="Bissap drink"
+          className="max-w-full max-h-full w-auto h-auto object-contain rounded-2xl shadow-2xl"
+          style={{
+            minHeight: '300px',
+            minWidth: '200px',
+            maxHeight: '600px',
+            imageRendering: 'high-quality',
+            WebkitImageRendering: 'high-quality',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+          }}
+          onError={(e) => {
+            console.error('Image failed to load:', e.target.src)
+          }}
         />
-        Your browser does not support the video tag.
-      </video>
+      </motion.div>
     </div>
   )
 }

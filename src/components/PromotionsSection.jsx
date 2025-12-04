@@ -2,37 +2,17 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { createBrowserClient } from '@/lib/supabase'
-import { Sparkles, Calendar } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
 
 export default function PromotionsSection() {
   const [promotions, setPromotions] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchPromotions()
+    // Don't fetch promotions - keep section empty
+    setLoading(false)
+    setPromotions([])
   }, [])
-
-  async function fetchPromotions() {
-    try {
-      const supabase = createBrowserClient()
-      const now = new Date().toISOString()
-
-      const { data, error } = await supabase
-        .from('promotions')
-        .select('*')
-        .lte('starts_at', now)
-        .gte('ends_at', now)
-        .order('starts_at', { ascending: false })
-
-      if (error) throw error
-      setPromotions(data || [])
-    } catch (error) {
-      console.error('Error fetching promotions:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('en-US', {

@@ -1,7 +1,15 @@
 import { createClient } from '@supabase/supabase-js'
 
+// Singleton instance for browser client
+let browserClient = null
+
 // Client-side Supabase client (uses anon key)
 export function createBrowserClient() {
+  // Return existing client if available
+  if (browserClient) {
+    return browserClient
+  }
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
@@ -9,7 +17,9 @@ export function createBrowserClient() {
     throw new Error('Missing Supabase environment variables')
   }
 
-  return createClient(supabaseUrl, supabaseAnonKey)
+  // Create and cache the client instance
+  browserClient = createClient(supabaseUrl, supabaseAnonKey)
+  return browserClient
 }
 
 // Server-side Supabase client (uses service_role key - NEVER expose to client)
@@ -28,6 +38,8 @@ export function createServerClient() {
     }
   })
 }
+
+
 
 
 

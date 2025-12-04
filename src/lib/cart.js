@@ -37,7 +37,12 @@ export function saveCart(cart) {
  */
 export function addToCart(product, quantity = 1) {
   const cart = getCart()
-  const existingItem = cart.find((item) => item.product_id === product.id)
+  // Create a unique key that includes product ID and size (if applicable)
+  const itemKey = product.size ? `${product.id}_${product.size}` : product.id
+  const existingItem = cart.find((item) => {
+    const itemKeyToCheck = item.size ? `${item.product_id}_${item.size}` : item.product_id
+    return itemKeyToCheck === itemKey
+  })
 
   if (existingItem) {
     existingItem.quantity += quantity
@@ -47,6 +52,7 @@ export function addToCart(product, quantity = 1) {
       name: product.name,
       price_cents: product.price_cents,
       quantity: quantity,
+      size: product.size || null,
     })
   }
 
@@ -57,10 +63,16 @@ export function addToCart(product, quantity = 1) {
 /**
  * Remove item from cart
  * @param {string} productId - Product ID to remove
+ * @param {string} size - Optional size to match
  */
-export function removeFromCart(productId) {
+export function removeFromCart(productId, size = null) {
   const cart = getCart()
-  const updatedCart = cart.filter((item) => item.product_id !== productId)
+  const updatedCart = cart.filter((item) => {
+    if (size !== null) {
+      return !(item.product_id === productId && item.size === size)
+    }
+    return item.product_id !== productId
+  })
   saveCart(updatedCart)
   return updatedCart
 }
@@ -113,6 +125,8 @@ export function calculateCartTotal(cart) {
 export function getCartItemCount(cart) {
   return cart.reduce((count, item) => count + item.quantity, 0)
 }
+
+
 
 
 

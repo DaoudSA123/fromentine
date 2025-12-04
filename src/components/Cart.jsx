@@ -109,7 +109,12 @@ export default function Cart({ cart, onCartUpdate, onCheckout }) {
               className="flex items-center justify-between glass rounded-xl p-4 group"
             >
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-gray-900 text-lg mb-1">{item.name}</p>
+                <p className="font-semibold text-gray-900 text-lg mb-1">
+                  {item.name}
+                  {item.size && (
+                    <span className="text-sm text-gray-600 ml-2">({item.size})</span>
+                  )}
+                </p>
                 <p className="text-sm text-gray-700">
                   ${((item.price_cents * item.quantity) / 100).toFixed(2)}
                 </p>
