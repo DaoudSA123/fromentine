@@ -108,8 +108,10 @@ export default function Hero() {
       <div className="absolute inset-0 w-full h-full z-0" style={{ transform: 'translateZ(0)', willChange: 'transform' }}>
         <video
           ref={video1Ref}
+          autoPlay
           muted
           playsInline
+          loop
           preload="auto"
           className="w-full h-full object-cover"
           style={{ 
@@ -132,8 +134,10 @@ export default function Hero() {
         </video>
         <video
           ref={video2Ref}
+          autoPlay
           muted
           playsInline
+          loop
           preload="auto"
           className="w-full h-full object-cover"
           style={{ 
