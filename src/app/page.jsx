@@ -17,32 +17,73 @@ export default function Home() {
       window.history.scrollRestoration = 'manual'
     }
     
-    // Function to scroll to top
+    // Function to scroll to top - more aggressive for mobile
     const scrollToTop = () => {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
       document.documentElement.scrollTop = 0
       document.body.scrollTop = 0
+      // Also try scrolling the window itself
+      if (window.scrollY !== 0) {
+        window.scrollTo(0, 0)
+      }
     }
     
-    // Immediately scroll to top on mount
-    scrollToTop()
-    
-    // Also scroll to top after a small delay to catch any late scroll events
-    const timeoutId = setTimeout(scrollToTop, 50)
-    
-    // Handle hash navigation only if hash exists (for direct links)
+    // Handle hash navigation - only scroll to hash if it exists and is not #home
+    // Otherwise, ensure we start at the top
     const hash = window.location.hash
     if (hash && hash !== '#home') {
-      // Small delay to ensure DOM is ready
+      // If there's a hash, wait for DOM to be ready then scroll to it
+      // But only after ensuring we've scrolled to top first
       setTimeout(() => {
         const element = document.querySelector(hash)
         if (element) {
           element.scrollIntoView({ behavior: 'smooth' })
         }
-      }, 200)
+      }, 300)
+    } else {
+      // No hash or hash is #home - ensure we're at the top
+      // Clear hash if it's just #home to keep URL clean
+      if (hash === '#home' && window.history.replaceState) {
+        window.history.replaceState(null, '', window.location.pathname)
+      }
     }
     
-    return () => clearTimeout(timeoutId)
+    // Immediately scroll to top on mount
+    scrollToTop()
+    
+    // Use requestAnimationFrame for better timing
+    requestAnimationFrame(() => {
+      scrollToTop()
+    })
+    
+    // Multiple attempts to scroll to top to catch any late scroll events
+    // This is especially important on mobile where scroll restoration can be delayed
+    const timeouts = [
+      setTimeout(scrollToTop, 0),
+      setTimeout(scrollToTop, 50),
+      setTimeout(scrollToTop, 100),
+      setTimeout(scrollToTop, 200),
+      setTimeout(scrollToTop, 500),
+    ]
+    
+    // Also listen for any scroll events and reset if needed
+    let scrollCheckCount = 0
+    const maxScrollChecks = 10
+    const checkScroll = () => {
+      if (window.scrollY > 0 && scrollCheckCount < maxScrollChecks) {
+        scrollToTop()
+        scrollCheckCount++
+        setTimeout(checkScroll, 100)
+      }
+    }
+    
+    // Start checking scroll position after a brief delay
+    const scrollCheckTimeout = setTimeout(checkScroll, 50)
+    
+    return () => {
+      timeouts.forEach(timeout => clearTimeout(timeout))
+      clearTimeout(scrollCheckTimeout)
+    }
   }, [])
 
   return (
