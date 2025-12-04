@@ -4,8 +4,7 @@ import { motion } from 'framer-motion'
 import { GlassWater, ArrowRight } from 'lucide-react'
 
 export default function DrinksPromoSection() {
-  // TODO: Update this URL with the actual drinks website URL
-  const DRINKS_URL = 'https://drinks.example.com'
+  const DRINKS_URL = 'https://fromentinejuice.com'
 
   return (
     <section id="drinks" className="relative overflow-hidden w-full h-full flex items-center justify-center">
@@ -28,7 +27,7 @@ export default function DrinksPromoSection() {
           </motion.div>
           
           <h2 className="text-5xl md:text-6xl font-bold mb-5 text-gray-900 text-premium-title">
-            Special Drinks Promotion
+            Special Drinks
           </h2>
           <p className="text-xl md:text-2xl mb-10 text-gray-900 text-premium-subtitle leading-relaxed">
             Check out our exclusive drinks selection and special offers!

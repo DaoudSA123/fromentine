@@ -59,8 +59,8 @@ export default function ContactSection() {
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-16"
         >
-          <div className="flex items-center justify-center gap-3 mb-5">
-            <Mail className="w-8 h-8 text-orange-500" />
+          <div className="flex items-center justify-center mb-5">
+            <Mail className="w-8 h-8 text-orange-500 mr-1 md:mr-3" />
             <h2 className="text-5xl md:text-6xl font-bold text-gray-900 text-premium-title">
               Catering & Enquiries
             </h2>

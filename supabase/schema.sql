@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS products (
   name TEXT NOT NULL,
   description TEXT,
   price_cents INTEGER NOT NULL,
-  category TEXT NOT NULL CHECK (category IN ('food', 'groceries', 'drinks')),
+  category TEXT NOT NULL,
   image_url TEXT,
   inventory_count INTEGER DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -123,6 +123,8 @@ CREATE POLICY "Public can insert catering contacts" ON catering_contacts
 
 -- Enable Realtime for orders table (for order tracking)
 ALTER PUBLICATION supabase_realtime ADD TABLE orders;
+
+
 
 
 
