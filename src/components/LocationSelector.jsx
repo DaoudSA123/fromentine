@@ -77,7 +77,7 @@ export default function LocationSelector({ selectedLocation, onLocationChange })
         className="glass-panel mb-8"
       >
         <div className="flex items-center gap-3">
-          <Loader2 className="w-5 h-5 animate-spin text-orange-500" />
+          <Loader2 className="w-5 h-5 animate-spin text-yellow-500" />
           <label className="block text-sm font-semibold text-gray-900">
             Loading locations...
           </label>
@@ -97,7 +97,7 @@ export default function LocationSelector({ selectedLocation, onLocationChange })
         htmlFor="location-select"
         className="block text-base font-semibold text-gray-900 mb-4 flex items-center gap-2"
       >
-        <MapPin className="w-5 h-5 text-orange-500" />
+        <MapPin className="w-5 h-5 text-yellow-500" />
         Select Location
       </label>
       
@@ -107,7 +107,7 @@ export default function LocationSelector({ selectedLocation, onLocationChange })
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="text-sm text-orange-500 mb-4 font-medium bg-orange-50 px-4 py-2 rounded-lg"
+            className="text-sm text-yellow-500 mb-4 font-medium bg-yellow-50 px-4 py-2 rounded-lg"
           >
             {geolocationError}
           </motion.p>
@@ -118,7 +118,7 @@ export default function LocationSelector({ selectedLocation, onLocationChange })
         id="location-select"
         value={selectedLocation?.id || ''}
         onChange={handleManualSelect}
-        className="w-full px-5 py-4 glass rounded-xl text-gray-900 font-medium focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
+        className="w-full px-5 py-4 glass rounded-xl text-gray-900 font-medium focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
         aria-label="Select restaurant location"
       >
         {locations.map((location) => (
@@ -138,13 +138,13 @@ export default function LocationSelector({ selectedLocation, onLocationChange })
             className="mt-6 p-5 glass rounded-xl space-y-3"
           >
             <div className="flex items-start gap-3">
-              <MapPin className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0" />
+              <MapPin className="w-5 h-5 text-yellow-500 mt-0.5 flex-shrink-0" />
               <p className="text-sm text-gray-900 leading-relaxed">
                 {selectedLocation.address}
               </p>
             </div>
             <div className="flex items-start gap-3">
-              <Phone className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0" />
+              <Phone className="w-5 h-5 text-yellow-500 mt-0.5 flex-shrink-0" />
               <p className="text-sm text-gray-900 leading-relaxed">
                 {selectedLocation.phone}
               </p>

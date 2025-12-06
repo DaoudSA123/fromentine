@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 
@@ -14,8 +15,14 @@ const menuItems = [
 ]
 
 export default function Navigation() {
+  const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+
+  // Hide navigation on admin routes
+  if (pathname?.startsWith('/admin')) {
+    return null
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,7 +52,7 @@ export default function Navigation() {
         <div className={`w-full max-w-7xl mx-auto rounded-full transition-all duration-300 ${
           isScrolled 
             ? 'bg-white/98 backdrop-blur-xl border border-gray-300/50 shadow-xl' 
-            : 'bg-yellow-400/95 backdrop-blur-lg border border-gray-200/40 shadow-lg'
+            : 'bg-orange-400/95 backdrop-blur-lg border border-gray-200/40 shadow-lg'
         }`}>
           <div className="flex items-center justify-between px-6 py-4 lg:px-10 lg:py-5 xl:px-12">
             {/* Brand Name - Left Side */}
@@ -55,7 +62,7 @@ export default function Navigation() {
                 e.preventDefault()
                 handleNavClick('#home')
               }}
-              className="text-base lg:text-lg xl:text-xl font-black text-gray-900 hover:text-orange-500 transition-colors duration-300 flex-shrink-0 mr-4"
+              className="text-base lg:text-lg xl:text-xl font-black text-gray-900 hover:text-yellow-500 transition-colors duration-300 flex-shrink-0 mr-4"
               style={{
                 fontFamily: 'system-ui, -apple-system, "Segoe UI", sans-serif',
                 letterSpacing: '0.02em',
@@ -82,12 +89,12 @@ export default function Navigation() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05, duration: 0.4 }}
-                  className="text-sm lg:text-base font-semibold text-gray-800 hover:text-orange-500 transition-all duration-300 relative group"
+                  className="text-sm lg:text-base font-semibold text-gray-800 hover:text-yellow-500 transition-all duration-300 relative group"
                   whileHover={{ y: -1 }}
                 >
                   {item.label}
                   <motion.span 
-                    className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full"
+                    className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full"
                     initial={{ width: 0 }}
                     whileHover={{ width: '100%' }}
                     transition={{ duration: 0.3 }}
@@ -105,7 +112,7 @@ export default function Navigation() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         onClick={() => setIsOpen(true)}
-        className="lg:hidden fixed top-4 right-4 z-50 glass-button p-3 rounded-full !bg-yellow-400 hover:!bg-yellow-500 active:!bg-yellow-500 text-black shadow-lg"
+        className="lg:hidden fixed top-4 right-4 z-50 glass-button p-3 rounded-full !bg-orange-400 hover:!bg-orange-500 active:!bg-orange-500 text-black shadow-lg"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         aria-label="Open menu"
@@ -121,7 +128,7 @@ export default function Navigation() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="lg:hidden fixed inset-0 z-50 bg-gradient-to-br from-yellow-400 via-yellow-400 to-yellow-500 flex flex-col"
+            className="lg:hidden fixed inset-0 z-50 bg-gradient-to-br from-orange-400 via-orange-400 to-orange-500 flex flex-col"
             onClick={() => setIsOpen(false)}
           >
             {/* Close Button */}
@@ -153,7 +160,7 @@ export default function Navigation() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1, duration: 0.4 }}
-                  className="text-4xl font-bold text-black hover:text-orange-500 transition-colors w-full text-center py-4"
+                  className="text-4xl font-bold text-black hover:text-yellow-500 transition-colors w-full text-center py-4"
                 >
                   {item.label}
                 </motion.a>

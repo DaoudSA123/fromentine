@@ -63,7 +63,7 @@ export default function ProductCard({ product, onAddToCart, sizeOptions = null, 
                   onClick={() => setSelectedSize(sizeOption.id)}
                   className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
                     selectedSize === sizeOption.id
-                      ? 'bg-yellow-400 text-gray-900 shadow-md scale-105'
+                      ? 'bg-orange-400 text-gray-900 shadow-md scale-105'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -96,7 +96,7 @@ export default function ProductCard({ product, onAddToCart, sizeOptions = null, 
             whileTap={{ scale: 0.95 }}
             onClick={handleAddToCartClick}
             disabled={hasSizes && !selectedSize}
-            className={`glass-button !bg-yellow-400 hover:!bg-yellow-500 active:!bg-yellow-500 text-black px-5 py-3 font-bold rounded-xl shadow-md shadow-yellow-400/30 transition-all duration-300 flex items-center gap-2 group/btn ${
+            className={`glass-button !bg-orange-400 hover:!bg-orange-500 active:!bg-orange-500 text-black px-5 py-3 font-bold rounded-xl shadow-md shadow-orange-400/30 transition-all duration-300 flex items-center gap-2 group/btn ${
               hasSizes && !selectedSize ? 'opacity-50 cursor-not-allowed' : ''
             }`}
             aria-label={`Add ${baseProductName || product.name} to cart`}

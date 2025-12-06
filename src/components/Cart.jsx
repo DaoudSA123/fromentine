@@ -10,12 +10,14 @@ import {
   calculateCartTotal,
   getCartItemCount,
 } from '@/lib/cart'
+import AddressAutocomplete from './AddressAutocomplete'
 
 export default function Cart({ cart, onCartUpdate, onCheckout }) {
   const [customerName, setCustomerName] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
   const [orderType, setOrderType] = useState('pickup')
   const [customerAddress, setCustomerAddress] = useState('')
+  const [addressData, setAddressData] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const totalCents = calculateCartTotal(cart)
@@ -56,6 +58,7 @@ export default function Cart({ cart, onCartUpdate, onCheckout }) {
         customerName,
         customerPhone,
         customerAddress: orderType === 'delivery' ? customerAddress : null,
+        addressData: orderType === 'delivery' ? addressData : null,
         orderType,
         items: cart,
         totalCents,
@@ -90,7 +93,7 @@ export default function Cart({ cart, onCartUpdate, onCheckout }) {
       className="glass-panel"
     >
       <div className="flex items-center gap-3 mb-8">
-        <ShoppingCart className="w-6 h-6 text-orange-500" />
+        <ShoppingCart className="w-6 h-6 text-yellow-500" />
         <h2 className="text-3xl font-bold text-gray-900 text-premium-title">
           Your Cart
         </h2>
@@ -137,7 +140,7 @@ export default function Cart({ cart, onCartUpdate, onCheckout }) {
                     onChange={(e) =>
                       handleQuantityChange(item.product_id, Math.max(1, parseInt(e.target.value) || 1))
                     }
-                    className="w-12 px-2 py-1 glass rounded text-center font-semibold text-gray-900 focus:ring-2 focus:ring-orange-500 focus:outline-none text-sm"
+                    className="w-12 px-2 py-1 glass rounded text-center font-semibold text-gray-900 focus:ring-2 focus:ring-yellow-500 focus:outline-none text-sm"
                     aria-label={`Quantity for ${item.name}`}
                   />
                   <motion.button
@@ -165,10 +168,10 @@ export default function Cart({ cart, onCartUpdate, onCheckout }) {
         </AnimatePresence>
       </div>
 
-      <div className="mb-8 p-6 glass-strong rounded-2xl border-2 border-orange-200">
+      <div className="mb-8 p-6 glass-strong rounded-2xl border-2 border-yellow-200">
         <div className="flex justify-between items-center">
           <span className="text-2xl font-bold text-gray-900">Total:</span>
-          <span className="text-3xl font-bold text-orange-500">
+          <span className="text-3xl font-bold text-yellow-500">
             ${totalDollars}
           </span>
         </div>
@@ -179,7 +182,7 @@ export default function Cart({ cart, onCartUpdate, onCheckout }) {
           <label htmlFor="customer-name" className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
             <User className="w-4 h-4" />
             <span>Name</span>
-            <span className="text-orange-500">*</span>
+            <span className="text-yellow-500">*</span>
           </label>
           <input
             type="text"
@@ -187,7 +190,7 @@ export default function Cart({ cart, onCartUpdate, onCheckout }) {
             value={customerName}
             onChange={(e) => setCustomerName(e.target.value)}
             required
-            className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
+            className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
             placeholder="Your name"
           />
         </div>
@@ -196,7 +199,7 @@ export default function Cart({ cart, onCartUpdate, onCheckout }) {
           <label htmlFor="customer-phone" className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
             <Phone className="w-4 h-4" />
             <span>Phone</span>
-            <span className="text-orange-500">*</span>
+            <span className="text-yellow-500">*</span>
           </label>
           <input
             type="tel"
@@ -204,7 +207,7 @@ export default function Cart({ cart, onCartUpdate, onCheckout }) {
             value={customerPhone}
             onChange={(e) => setCustomerPhone(e.target.value)}
             required
-            className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
+            className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
             placeholder="(555) 123-4567"
           />
         </div>
@@ -221,9 +224,9 @@ export default function Cart({ cart, onCartUpdate, onCheckout }) {
                 value="pickup"
                 checked={orderType === 'pickup'}
                 onChange={(e) => setOrderType(e.target.value)}
-                className="mr-3 w-5 h-5 accent-orange-500 cursor-pointer"
+                className="mr-3 w-5 h-5 accent-yellow-500 cursor-pointer"
               />
-              <span className="text-gray-900 font-medium group-hover:text-orange-500 transition-colors">Pickup</span>
+              <span className="text-gray-900 font-medium group-hover:text-yellow-500 transition-colors">Pickup</span>
             </label>
             <label className="flex items-center cursor-pointer group">
               <input
@@ -231,9 +234,9 @@ export default function Cart({ cart, onCartUpdate, onCheckout }) {
                 value="delivery"
                 checked={orderType === 'delivery'}
                 onChange={(e) => setOrderType(e.target.value)}
-                className="mr-3 w-5 h-5 accent-orange-500 cursor-pointer"
+                className="mr-3 w-5 h-5 accent-yellow-500 cursor-pointer"
               />
-              <span className="text-gray-900 font-medium group-hover:text-orange-500 transition-colors">Delivery</span>
+              <span className="text-gray-900 font-medium group-hover:text-yellow-500 transition-colors">Delivery</span>
             </label>
           </div>
         </div>
@@ -249,16 +252,26 @@ export default function Cart({ cart, onCartUpdate, onCheckout }) {
               <label htmlFor="customer-address" className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
                 <MapPin className="w-4 h-4" />
                 <span>Delivery Address</span>
-                <span className="text-orange-500">*</span>
+                <span className="text-yellow-500">*</span>
               </label>
-              <textarea
+              <AddressAutocomplete
                 id="customer-address"
                 value={customerAddress}
-                onChange={(e) => setCustomerAddress(e.target.value)}
+                onChange={(value) => {
+                  setCustomerAddress(value)
+                  // Clear address data if user manually edits
+                  if (!value) {
+                    setAddressData(null)
+                  }
+                }}
+                onAddressSelect={(data) => {
+                  setAddressData(data)
+                  if (data?.formatted_address) {
+                    setCustomerAddress(data.formatted_address)
+                  }
+                }}
                 required={orderType === 'delivery'}
-                rows="3"
-                className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 resize-none text-base"
-                placeholder="Street address, city, zip code"
+                placeholder="Start typing your address..."
               />
             </motion.div>
           )}
@@ -269,7 +282,7 @@ export default function Cart({ cart, onCartUpdate, onCheckout }) {
           disabled={isSubmitting}
           whileHover={{ scale: isSubmitting ? 1 : 1.02, y: -2 }}
           whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-          className="w-full glass-button !bg-yellow-400 hover:!bg-yellow-500 active:!bg-yellow-500 text-black py-5 text-lg font-bold rounded-xl shadow-lg shadow-yellow-400/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-3"
+          className="w-full glass-button !bg-orange-400 hover:!bg-orange-500 active:!bg-orange-500 text-black py-5 text-lg font-bold rounded-xl shadow-lg shadow-orange-400/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-3"
         >
           {isSubmitting ? (
             <>

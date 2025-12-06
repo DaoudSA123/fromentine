@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { createBrowserClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import AdminOrders from '@/components/AdminOrders'
+import AdminProducts from '@/components/AdminProducts'
 
 export default function AdminPage() {
   const [user, setUser] = useState(null)
@@ -13,6 +14,7 @@ export default function AdminPage() {
   const [password, setPassword] = useState('')
   const [isLoggingIn, setIsLoggingIn] = useState(false)
   const [loginError, setLoginError] = useState(null)
+  const [activeTab, setActiveTab] = useState('orders')
   const router = useRouter()
 
   useEffect(() => {
@@ -110,7 +112,13 @@ export default function AdminPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 glass rounded-xl text-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all duration-300"
+                placeholder="admin@example.com"
+                className="w-full px-4 py-3 glass rounded-xl focus:ring-2 focus:ring-yellow-500 focus:outline-none transition-all duration-300 text-gray-900 placeholder-gray-500"
+                style={{ 
+                  color: '#111827',
+                  WebkitTextFillColor: '#111827',
+                  caretColor: '#111827'
+                }}
               />
             </div>
             <div>
@@ -126,7 +134,15 @@ export default function AdminPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 glass rounded-xl text-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all duration-300"
+                placeholder="Enter your password"
+                className="w-full px-4 py-3 glass rounded-xl focus:ring-2 focus:ring-yellow-500 focus:outline-none transition-all duration-300 text-gray-900 placeholder-gray-500"
+                style={{ 
+                  color: '#111827',
+                  WebkitTextFillColor: '#111827',
+                  caretColor: '#111827',
+                  fontSize: '16px',
+                  letterSpacing: '2px'
+                }}
               />
             </div>
             {loginError && (
@@ -143,7 +159,7 @@ export default function AdminPage() {
               disabled={isLoggingIn}
               whileHover={{ scale: isLoggingIn ? 1 : 1.02 }}
               whileTap={{ scale: isLoggingIn ? 1 : 0.98 }}
-              className="w-full glass-button bg-orange-500 hover:bg-yellow-400 active:bg-yellow-400 text-white hover:text-black active:text-black py-4 text-lg font-bold disabled:opacity-50 transition-all duration-300"
+              className="w-full glass-button bg-yellow-500 hover:bg-orange-400 active:bg-orange-400 text-white hover:text-black active:text-black py-4 text-lg font-bold disabled:opacity-50 transition-all duration-300"
             >
               {isLoggingIn ? 'Logging in...' : 'Login'}
             </motion.button>
@@ -167,15 +183,42 @@ export default function AdminPage() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleLogout}
-              className="glass-button bg-orange-500 hover:bg-yellow-400 active:bg-yellow-400 text-white hover:text-black active:text-black px-6 py-2 font-semibold transition-all duration-300"
+              className="glass-button bg-yellow-500 hover:bg-orange-400 active:bg-orange-400 text-white hover:text-black active:text-black px-6 py-2 font-semibold transition-all duration-300"
             >
               Logout
             </motion.button>
           </div>
         </div>
       </div>
+
+      {/* Navigation Tabs */}
+      <div className="container mx-auto px-4">
+        <div className="flex gap-2 mb-6">
+          <button
+            onClick={() => setActiveTab('orders')}
+            className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+              activeTab === 'orders'
+                ? 'bg-yellow-500 text-black'
+                : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
+            }`}
+          >
+            Orders
+          </button>
+          <button
+            onClick={() => setActiveTab('products')}
+            className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+              activeTab === 'products'
+                ? 'bg-yellow-500 text-black'
+                : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
+            }`}
+          >
+            Products
+          </button>
+        </div>
+      </div>
+
       <div className="container mx-auto px-4 py-8">
-        <AdminOrders />
+        {activeTab === 'orders' ? <AdminOrders /> : <AdminProducts />}
       </div>
     </div>
   )

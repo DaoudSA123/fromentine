@@ -9,6 +9,7 @@ export async function POST(request) {
       customerName,
       customerPhone,
       customerAddress,
+      addressData,
       orderType,
       items,
       totalCents,
@@ -50,9 +51,20 @@ export async function POST(request) {
     // Sanitize inputs
     const sanitizedName = customerName.trim().substring(0, 255)
     const sanitizedPhone = customerPhone.trim().substring(0, 50)
-    const sanitizedAddress = customerAddress
-      ? customerAddress.trim().substring(0, 500)
-      : null
+    
+    // Use formatted address from addressData if available, otherwise use customerAddress
+    let sanitizedAddress = null
+    if (orderType === 'delivery') {
+      if (addressData?.formatted_address) {
+        sanitizedAddress = addressData.formatted_address.trim().substring(0, 500)
+      } else if (customerAddress) {
+        sanitizedAddress = customerAddress.trim().substring(0, 500)
+      }
+    }
+    
+    // Store full address data as JSON string (optional - can be stored in a separate field if needed)
+    // For now, we'll store the formatted address in customer_address
+    // If you want to store full address data, consider adding a new JSONB column
 
     // Create order using service_role (server-side only)
     const supabase = createServerClient()
@@ -120,6 +132,7 @@ export async function POST(request) {
     )
   }
 }
+
 
 
 

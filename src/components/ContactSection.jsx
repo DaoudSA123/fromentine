@@ -60,7 +60,7 @@ export default function ContactSection() {
           className="text-center mb-16"
         >
           <div className="flex items-center justify-center mb-5">
-            <Mail className="w-8 h-8 text-orange-500 mr-1 md:mr-3" />
+            <Mail className="w-8 h-8 text-yellow-500 mr-1 md:mr-3" />
             <h2 className="text-5xl md:text-6xl font-bold text-gray-900 text-premium-title">
               Catering & Enquiries
             </h2>
@@ -82,7 +82,7 @@ export default function ContactSection() {
             <div>
               <label htmlFor="name" className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
                 <span>Name</span>
-                <span className="text-orange-500">*</span>
+                <span className="text-yellow-500">*</span>
               </label>
               <input
                 type="text"
@@ -91,7 +91,7 @@ export default function ContactSection() {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
+                className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
                 placeholder="Your name"
               />
             </div>
@@ -100,7 +100,7 @@ export default function ContactSection() {
               <label htmlFor="email" className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
                 <Mail className="w-4 h-4" />
                 <span>Email</span>
-                <span className="text-orange-500">*</span>
+                <span className="text-yellow-500">*</span>
               </label>
               <input
                 type="email"
@@ -109,7 +109,7 @@ export default function ContactSection() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
+                className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
                 placeholder="your.email@example.com"
               />
             </div>
@@ -125,7 +125,7 @@ export default function ContactSection() {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
+                className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
                 placeholder="(555) 123-4567"
               />
             </div>
@@ -134,7 +134,7 @@ export default function ContactSection() {
               <label htmlFor="message" className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
                 <MessageSquare className="w-4 h-4" />
                 <span>Message</span>
-                <span className="text-orange-500">*</span>
+                <span className="text-yellow-500">*</span>
               </label>
               <textarea
                 id="message"
@@ -179,7 +179,7 @@ export default function ContactSection() {
               disabled={isSubmitting}
               whileHover={{ scale: isSubmitting ? 1 : 1.02, y: -2 }}
               whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-              className="w-full glass-button !bg-yellow-400 hover:!bg-yellow-500 active:!bg-yellow-500 text-black py-4 text-lg font-bold rounded-xl shadow-md shadow-yellow-400/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2"
+              className="w-full glass-button !bg-orange-400 hover:!bg-orange-500 active:!bg-orange-500 text-black py-4 text-lg font-bold rounded-xl shadow-md shadow-orange-400/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>

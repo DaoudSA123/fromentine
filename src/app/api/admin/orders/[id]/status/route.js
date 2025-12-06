@@ -1,4 +1,5 @@
 import { createServerClient } from '@/lib/supabase'
+import { verifyAdminAuth } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 
 const ALLOWED_STATUSES = [
@@ -28,9 +29,11 @@ export async function PATCH(request, { params }) {
       )
     }
 
-    // TODO: Add authentication check here
-    // Verify that the user is an admin via Supabase Auth
-    // For now, this endpoint is protected by service_role key usage
+    // Verify admin authentication
+    const authResult = await verifyAdminAuth(request)
+    if (authResult.error) {
+      return authResult.error
+    }
 
     const supabase = createServerClient()
 

@@ -55,6 +55,9 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 # Service role key (NEVER expose this in client-side code - server-side only)
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# Google Places API Key (for address autocomplete)
+NEXT_PUBLIC_GOOGLE_PLACES_API_KEY=your_google_places_api_key_here
 ```
 
 You can find these values in your Supabase project settings:
@@ -63,12 +66,52 @@ You can find these values in your Supabase project settings:
 - Copy the **anon/public key** → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - Copy the **service_role key** → `SUPABASE_SERVICE_ROLE_KEY` (keep this secret!)
 
+**Google Places API Setup:**
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the following APIs:
+   - **Places API** (for autocomplete)
+   - **Maps JavaScript API** (required for Places API)
+4. Go to **Credentials** → **Create Credentials** → **API Key**
+5. Copy your API key and add it to `.env.local` as `NEXT_PUBLIC_GOOGLE_PLACES_API_KEY`
+6. (Optional) Restrict the API key to only allow requests from your domain for security
+
 ### 4. Create Admin User
 
+**Method 1: Via Supabase Dashboard (Recommended)**
 1. Go to your Supabase dashboard → **Authentication** → **Users**
 2. Click **Add User** → **Create new user**
 3. Enter an email and password for your admin account
 4. Save the credentials (you'll use these to log in to `/admin`)
+
+**Method 2: Via Supabase SQL Editor**
+You can also create admin users programmatically using SQL:
+```sql
+-- Create a new admin user
+INSERT INTO auth.users (
+  instance_id,
+  id,
+  aud,
+  role,
+  email,
+  encrypted_password,
+  email_confirmed_at,
+  created_at,
+  updated_at
+) VALUES (
+  '00000000-0000-0000-0000-000000000000',
+  gen_random_uuid(),
+  'authenticated',
+  'authenticated',
+  'admin@example.com',
+  crypt('your_secure_password', gen_salt('bf')),
+  NOW(),
+  NOW(),
+  NOW()
+);
+```
+
+**Note:** After creating a user, they can log in at `/admin` using their email and password. All admin API routes require authentication.
 
 ### 5. Enable Realtime (if not already enabled)
 
@@ -165,6 +208,7 @@ Before deploying, ensure you have:
 - [ ] `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
 - [ ] `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anon/public key
 - [ ] `SUPABASE_SERVICE_ROLE_KEY` - Supabase service_role key (server-side only)
+- [ ] `NEXT_PUBLIC_GOOGLE_PLACES_API_KEY` - Google Places API key (for address autocomplete)
 
 ## Security Notes
 
@@ -210,6 +254,7 @@ This project is private and proprietary.
 ## Support
 
 For issues or questions, please contact the development team.
+
 
 
 

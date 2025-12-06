@@ -192,7 +192,7 @@ export default function Hero() {
             href="#order"
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.98 }}
-            className="glass-button !bg-yellow-400 hover:!bg-yellow-500 active:!bg-yellow-500 text-black font-bold text-lg px-8 py-4 rounded-xl shadow-lg shadow-yellow-400/30 transition-all duration-300"
+            className="glass-button !bg-orange-400 hover:!bg-orange-500 active:!bg-orange-500 text-black font-bold text-lg px-8 py-4 rounded-xl shadow-lg shadow-orange-400/30 transition-all duration-300"
             aria-label="Start ordering"
           >
             Order Now
@@ -201,7 +201,7 @@ export default function Hero() {
             href="#promotions"
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.98 }}
-            className="glass-button !bg-yellow-400 hover:!bg-yellow-500 active:!bg-yellow-500 text-black font-bold text-lg px-8 py-4 rounded-xl shadow-lg shadow-yellow-400/30 transition-all duration-300"
+            className="glass-button !bg-orange-400 hover:!bg-orange-500 active:!bg-orange-500 text-black font-bold text-lg px-8 py-4 rounded-xl shadow-lg shadow-orange-400/30 transition-all duration-300"
             aria-label="View promotions"
           >
             View Promotions
