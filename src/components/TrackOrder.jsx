@@ -232,7 +232,7 @@ export default function TrackOrder({ orderId }) {
                   transition={{ duration: 0.3 }}
                   className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
                     isActive
-                      ? 'bg-gradient-to-br from-orange-500 to-yellow-500 text-white'
+                      ? 'bg-gradient-to-br from-yellow-500 to-orange-500 text-white'
                       : 'glass text-gray-600'
                   }`}
                 >
@@ -242,7 +242,7 @@ export default function TrackOrder({ orderId }) {
                   <p
                     className={`font-semibold text-lg ${
                       isCurrent
-                        ? 'bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent'
+                        ? 'bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent'
                         : isActive
                         ? 'text-gray-800'
                         : 'text-gray-400'
@@ -300,20 +300,26 @@ export default function TrackOrder({ orderId }) {
         <div className="border-t border-gray-300 pt-6">
           <h3 className="font-semibold text-gray-800 mb-4 text-lg">Items:</h3>
           <div className="space-y-2 mb-6">
-            {orderItems.map((item) => (
-              <div key={item.id} className="flex justify-between glass rounded-xl p-3">
-                <span className="text-gray-700">
-                  {item.products?.name || 'Product'} × {item.quantity}
-                </span>
-                <span className="font-semibold text-gray-800">
-                  ${((item.price_cents * item.quantity) / 100).toFixed(2)}
-                </span>
-              </div>
-            ))}
+            {orderItems.map((item) => {
+              const quantity = item.qty || item.quantity || 0
+              const priceCents = item.price_cents || 0
+              const itemTotal = (priceCents * quantity) / 100
+              
+              return (
+                <div key={item.id} className="flex justify-between glass rounded-xl p-3">
+                  <span className="text-gray-700">
+                    {item.products?.name || 'Product'} × {quantity}
+                  </span>
+                  <span className="font-semibold text-gray-800">
+                    ${itemTotal.toFixed(2)}
+                  </span>
+                </div>
+              )
+            })}
           </div>
           <div className="border-t border-gray-300 pt-4 flex justify-between text-2xl font-bold">
             <span className="text-gray-800">Total:</span>
-            <span className="text-orange-500 font-bold">
+            <span className="text-yellow-500 font-bold">
               ${totalDollars}
             </span>
           </div>

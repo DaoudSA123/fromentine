@@ -23,7 +23,7 @@ export default function DrinksPromoSection() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="mb-6"
           >
-            <GlassWater className="w-16 h-16 text-orange-500 mx-auto" />
+            <GlassWater className="w-16 h-16 text-yellow-500 mx-auto" />
           </motion.div>
           
           <h2 className="text-5xl md:text-6xl font-bold mb-5 text-gray-900 text-premium-title">
@@ -39,7 +39,7 @@ export default function DrinksPromoSection() {
             rel="noopener noreferrer"
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
-            className="glass-button inline-block !bg-yellow-400 hover:!bg-yellow-500 active:!bg-yellow-500 text-black px-10 py-5 text-lg font-bold rounded-xl shadow-lg shadow-yellow-400/30 transition-all duration-300 flex items-center gap-3 mx-auto"
+            className="glass-button inline-block !bg-orange-400 hover:!bg-orange-500 active:!bg-orange-500 text-black px-10 py-5 text-lg font-bold rounded-xl shadow-lg shadow-orange-400/30 transition-all duration-300 flex items-center gap-3 mx-auto"
             aria-label="Visit drinks promotion website"
           >
             <span>View Drinks Menu</span>

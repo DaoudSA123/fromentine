@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Sparkles } from 'lucide-react'
+import { Sparkles, Calendar } from 'lucide-react'
 
 export default function PromotionsSection() {
   const [promotions, setPromotions] = useState([])
@@ -33,11 +33,11 @@ export default function PromotionsSection() {
           className="text-center mb-16"
         >
           <div className="flex items-center justify-center gap-3 mb-5">
-            <Sparkles className="w-8 h-8 text-yellow-400" />
+            <Sparkles className="w-8 h-8 text-orange-400" />
             <h2 className="text-5xl md:text-6xl font-bold text-gray-900 text-premium-title">
               Promotions & Events
             </h2>
-            <Sparkles className="w-8 h-8 text-yellow-400" />
+            <Sparkles className="w-8 h-8 text-orange-400" />
           </div>
           <p className="text-lg md:text-xl text-gray-800 text-premium-subtitle">
             Don't miss out on our special offers!
@@ -96,7 +96,7 @@ export default function PromotionsSection() {
                     <p className="text-gray-800 mb-5 leading-relaxed">{promo.description}</p>
                   )}
                   <div className="flex items-center gap-2 text-sm text-gray-700 mb-6 font-medium">
-                    <Calendar className="w-4 h-4 text-orange-500" />
+                    <Calendar className="w-4 h-4 text-yellow-500" />
                     <p>
                       Valid: {formatDate(promo.starts_at)} - {formatDate(promo.ends_at)}
                     </p>
@@ -105,7 +105,7 @@ export default function PromotionsSection() {
                     href="#order"
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.95 }}
-                    className="glass-button inline-block !bg-yellow-400 hover:!bg-yellow-500 active:!bg-yellow-500 text-black px-6 py-3 font-bold rounded-xl shadow-md shadow-yellow-400/30 transition-all duration-300"
+                    className="glass-button inline-block !bg-orange-400 hover:!bg-orange-500 active:!bg-orange-500 text-black px-6 py-3 font-bold rounded-xl shadow-md shadow-orange-400/30 transition-all duration-300"
                   >
                     Claim Offer
                   </motion.a>

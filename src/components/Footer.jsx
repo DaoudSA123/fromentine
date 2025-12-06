@@ -23,7 +23,7 @@ export default function Footer() {
   }
 
   return (
-    <footer className="relative bg-gray-900 text-white">
+    <footer className="relative bg-black text-white">
       <div className="container mx-auto px-6 md:px-8 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-8">
           {/* Brand Section */}
@@ -34,7 +34,7 @@ export default function Footer() {
             transition={{ duration: 0.6 }}
             className="lg:col-span-1"
           >
-            <h3 className="text-2xl font-bold mb-4 text-yellow-400">La Fromentine</h3>
+            <h3 className="text-2xl font-bold mb-4 text-orange-400">La Fromentine</h3>
             <p className="text-gray-400 mb-4 leading-relaxed">
               Épicerie et Restaurant - Authentic flavors and fresh groceries
             </p>
@@ -42,7 +42,7 @@ export default function Footer() {
               href="https://fromentinejuice.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-yellow-400 hover:text-yellow-300 transition-colors text-sm font-medium"
+              className="inline-flex items-center gap-2 text-orange-400 hover:text-orange-300 transition-colors text-sm font-medium"
             >
               Visit Our Drinks Site
               <ExternalLink className="w-4 h-4" />
@@ -62,7 +62,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <button
                     onClick={() => handleLinkClick(link.href)}
-                    className="text-gray-400 hover:text-yellow-400 transition-colors text-sm"
+                    className="text-gray-400 hover:text-orange-400 transition-colors text-sm"
                   >
                     {link.label}
                   </button>
@@ -81,11 +81,11 @@ export default function Footer() {
             <h4 className="text-lg font-semibold mb-4 text-white">Contact Us</h4>
             <ul className="space-y-3">
               <li className="flex items-start gap-3 text-gray-400 text-sm">
-                <MapPin className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+                <MapPin className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
                 <span>Visit us at our locations</span>
               </li>
               <li className="flex items-center gap-3 text-gray-400 text-sm">
-                <Phone className="w-5 h-5 text-yellow-400 flex-shrink-0" />
+                <Phone className="w-5 h-5 text-orange-400 flex-shrink-0" />
                 <span>Call for orders</span>
               </li>
               <li>
@@ -96,9 +96,9 @@ export default function Footer() {
                       element.scrollIntoView({ behavior: 'smooth' })
                     }
                   }}
-                  className="flex items-center gap-3 text-gray-400 hover:text-yellow-400 transition-colors text-sm"
+                  className="flex items-center gap-3 text-gray-400 hover:text-orange-400 transition-colors text-sm"
                 >
-                  <Mail className="w-5 h-5 text-yellow-400 flex-shrink-0" />
+                  <Mail className="w-5 h-5 text-orange-400 flex-shrink-0" />
                   <span>Contact Us</span>
                 </button>
               </li>
@@ -138,13 +138,13 @@ export default function Footer() {
             <div className="flex gap-6 text-sm text-gray-400">
               <button
                 onClick={() => handleLinkClick('#contact')}
-                className="hover:text-yellow-400 transition-colors"
+                className="hover:text-orange-400 transition-colors"
               >
                 Privacy Policy
               </button>
               <button
                 onClick={() => handleLinkClick('#contact')}
-                className="hover:text-yellow-400 transition-colors"
+                className="hover:text-orange-400 transition-colors"
               >
                 Terms of Service
               </button>

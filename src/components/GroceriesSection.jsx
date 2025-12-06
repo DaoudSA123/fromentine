@@ -40,7 +40,7 @@ export default function GroceriesSection() {
   }
 
   return (
-    <section id="groceries" className="section-spacing relative bg-yellow-400">
+    <section id="groceries" className="section-spacing relative bg-orange-400">
       <div className="container mx-auto px-6 md:px-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

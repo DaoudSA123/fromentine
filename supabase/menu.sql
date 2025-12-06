@@ -123,3 +123,4 @@ INSERT INTO products (name, category, price_cents) VALUES
 ('Dégués / Thiakry', 'Desserts', 699),
 ('Tiramisu', 'Desserts', 650);
 
+

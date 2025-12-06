@@ -38,7 +38,7 @@ html, body {
 
 /* Focus styles for accessibility */
 *:focus-visible {
-  outline: 2px solid #FACC15;
+  outline: 2px solid #F97316;
   outline-offset: 2px;
 }
 
@@ -48,6 +48,16 @@ a {
 }
 
 a:hover {
+  color: inherit;
+}
+
+/* Ensure input text is visible - default to inherit, but can be overridden */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+textarea {
   color: inherit;
 }
 
@@ -99,7 +109,7 @@ a:hover {
     letter-spacing: 0.01em;
   }
   
-  .glass-button:not([class*="bg-yellow"]):not([class*="bg-orange"]) {
+  .glass-button:not([class*="bg-orange"]):not([class*="bg-yellow"]) {
     @apply glass;
   }
   
@@ -116,7 +126,7 @@ a:hover {
   }
   
   .glass:hover {
-    border-color: rgba(250, 204, 21, 0.4);
+    border-color: rgba(180, 83, 9, 0.4);
   }
   
   /* Premium card elevation */
@@ -146,8 +156,8 @@ a:hover {
   /* Subtle background patterns */
   .bg-subtle-pattern {
     background-image: 
-      radial-gradient(circle at 20% 50%, rgba(250, 204, 21, 0.03) 0%, transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(249, 115, 22, 0.03) 0%, transparent 50%);
+      radial-gradient(circle at 20% 50%, rgba(180, 83, 9, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(250, 204, 21, 0.03) 0%, transparent 50%);
   }
   
   /* Premium section spacing */

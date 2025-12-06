@@ -157,13 +157,14 @@ export default function OrderSection() {
       const { data, error } = await supabase
         .from('products')
         .select('*')
+        .neq('category', 'groceries') // Exclude groceries from main order section
         .order('name')
 
       if (error) throw error
       const productsData = data || []
       setAllProducts(productsData)
       
-      // Extract unique categories from products
+      // Extract unique categories from products (excluding groceries)
       const uniqueCategories = [...new Set(productsData.map(p => p.category))]
         .filter(Boolean)
         .sort()
@@ -298,7 +299,7 @@ export default function OrderSection() {
                   onClick={() => setSelectedCategory(category.id)}
                   className={`px-4 py-2 md:px-6 md:py-3 rounded-lg font-semibold text-sm md:text-lg transition-all duration-300 whitespace-nowrap ${
                     selectedCategory === category.id
-                      ? 'bg-yellow-400 text-gray-900 shadow-md scale-105'
+                      ? 'bg-orange-400 text-gray-900 shadow-md scale-105'
                       : 'text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -366,7 +367,7 @@ export default function OrderSection() {
                   onClick={() => setShowAllProducts(!showAllProducts)}
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.98 }}
-                  className="glass-button !bg-yellow-400 hover:!bg-yellow-500 active:!bg-yellow-500 text-black px-8 py-3 font-bold rounded-xl shadow-md shadow-yellow-400/30 transition-all duration-300"
+                  className="glass-button !bg-orange-400 hover:!bg-orange-500 active:!bg-orange-500 text-black px-8 py-3 font-bold rounded-xl shadow-md shadow-orange-400/30 transition-all duration-300"
                 >
                   {showAllProducts ? 'Show Less' : 'See More'}
                 </motion.button>
