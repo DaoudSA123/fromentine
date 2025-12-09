@@ -2,10 +2,19 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createServerClient } from '@/lib/supabase'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
-
 export async function POST(request) {
   try {
+    // Validate Stripe key first
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return NextResponse.json(
+        { error: 'Stripe is not configured' },
+        { status: 500 }
+      )
+    }
+
+    // Initialize Stripe inside the function to avoid build-time errors
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+
     const body = await request.json()
     const {
       locationId,
@@ -32,14 +41,6 @@ export async function POST(request) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
-      )
-    }
-
-    // Validate Stripe key
-    if (!process.env.STRIPE_SECRET_KEY) {
-      return NextResponse.json(
-        { error: 'Stripe is not configured' },
-        { status: 500 }
       )
     }
 
