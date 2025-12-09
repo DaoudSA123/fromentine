@@ -26,13 +26,24 @@ export default function AdminPage() {
       const supabase = createBrowserClient()
       const {
         data: { user },
+        error,
       } = await supabase.auth.getUser()
 
-      if (user) {
+      // Handle refresh token errors gracefully
+      if (error) {
+        // If it's a refresh token error, clear any stale session
+        if (error.message?.includes('Refresh Token') || error.message?.includes('Invalid Refresh Token')) {
+          await supabase.auth.signOut()
+        }
+        // Don't set user if there's an error
+        setUser(null)
+      } else if (user) {
         setUser(user)
       }
     } catch (error) {
-      console.error('Error checking user:', error)
+      // Silently handle auth errors - user just needs to log in
+      console.log('No active session, user needs to log in')
+      setUser(null)
     } finally {
       setLoading(false)
     }

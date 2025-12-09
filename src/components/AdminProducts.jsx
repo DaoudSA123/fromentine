@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Edit2, Trash2, X, Save, Loader2, Package, ShoppingBag } from 'lucide-react'
 import { authenticatedFetch } from '@/lib/api'
@@ -149,7 +149,7 @@ function ProductRow({ product, index, isGrocery, isOutOfStock, onEdit, onDelete,
 export default function AdminProducts() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState('all') // 'all', 'groceries', 'others'
+  const [activeTab, setActiveTab] = useState('all') // 'all' or category name
   const [searchQuery, setSearchQuery] = useState('')
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
@@ -161,6 +161,7 @@ export default function AdminProducts() {
     image_url: '',
     inventory_count: null,
     is_out_of_stock: false,
+    newCategory: '',
   })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
@@ -189,21 +190,32 @@ export default function AdminProducts() {
     }
   }
 
+  // Get all unique categories from products
+  // Always include 'groceries' even if no products exist yet
+  const categories = useMemo(() => {
+    const uniqueCategories = [...new Set(products.map(p => p.category).filter(Boolean))]
+    // Ensure 'groceries' is always included
+    if (!uniqueCategories.includes('groceries')) {
+      uniqueCategories.push('groceries')
+    }
+    return uniqueCategories.sort()
+  }, [products])
+
+  // Get product count for each category
+  const getCategoryCount = (category) => {
+    if (category === 'all') return products.length
+    return products.filter(p => p.category === category).length
+  }
+
   // Filter products based on active tab and search
   const filteredProducts = products.filter((product) => {
-    const matchesTab =
-      activeTab === 'all' ||
-      (activeTab === 'groceries' && product.category === 'groceries') ||
-      (activeTab === 'others' && product.category !== 'groceries')
+    const matchesTab = activeTab === 'all' || product.category === activeTab
     
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase()))
 
     return matchesTab && matchesSearch
   })
-
-  const groceries = products.filter(p => p.category === 'groceries')
-  const others = products.filter(p => p.category !== 'groceries')
 
   function resetForm() {
     setFormData({
@@ -214,6 +226,7 @@ export default function AdminProducts() {
       image_url: '',
       inventory_count: null,
       is_out_of_stock: false,
+      newCategory: '',
     })
     setEditingProduct(null)
     setShowAddForm(false)
@@ -234,6 +247,7 @@ export default function AdminProducts() {
       image_url: product.image_url || '',
       inventory_count: product.inventory_count,
       is_out_of_stock: isOutOfStock,
+      newCategory: '',
     })
     setShowAddForm(true)
   }
@@ -268,11 +282,21 @@ export default function AdminProducts() {
         inventoryCount = formData.is_out_of_stock ? 0 : null
       }
 
+      // Handle new category creation
+      let categoryValue = formData.category.trim()
+      if (categoryValue === '__new__' && formData.newCategory) {
+        categoryValue = formData.newCategory.trim()
+      }
+      
+      if (!categoryValue) {
+        throw new Error('Category is required')
+      }
+
       const productData = {
         name: formData.name.trim(),
         description: formData.description.trim() || null,
         price_cents: priceCents,
-        category: formData.category.trim(),
+        category: categoryValue,
         image_url: formData.image_url.trim() || null,
         inventory_count: inventoryCount,
       }
@@ -421,40 +445,44 @@ export default function AdminProducts() {
           </motion.button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-2 mb-4">
+        {/* Category Tabs */}
+        <div className="flex gap-2 mb-4 flex-wrap">
           <button
             onClick={() => setActiveTab('all')}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               activeTab === 'all'
-                ? 'bg-yellow-500 text-black'
+                ? 'bg-yellow-500 text-black shadow-md'
                 : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
             }`}
           >
             All ({products.length})
           </button>
-          <button
-            onClick={() => setActiveTab('groceries')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-              activeTab === 'groceries'
-                ? 'bg-yellow-500 text-black'
-                : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
-            }`}
-          >
-            <ShoppingBag className="w-4 h-4" />
-            Groceries ({groceries.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('others')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-              activeTab === 'others'
-                ? 'bg-yellow-500 text-black'
-                : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
-            }`}
-          >
-            <Package className="w-4 h-4" />
-            Other Products ({others.length})
-          </button>
+          {categories.map((category) => {
+            const count = getCategoryCount(category)
+            const isGroceries = category.toLowerCase() === 'groceries'
+            // Capitalize category name for display
+            const displayName = isGroceries 
+              ? 'Groceries' 
+              : category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()
+            return (
+              <button
+                key={category}
+                onClick={() => setActiveTab(category)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                  activeTab === category
+                    ? 'bg-yellow-500 text-black shadow-md'
+                    : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
+                }`}
+              >
+                {isGroceries ? (
+                  <ShoppingBag className="w-4 h-4" />
+                ) : (
+                  <Package className="w-4 h-4" />
+                )}
+                {displayName} ({count})
+              </button>
+            )
+          })}
         </div>
 
         {/* Search */}
@@ -554,14 +582,43 @@ export default function AdminProducts() {
                     <label className="block text-sm font-semibold text-gray-900 mb-2">
                       Category *
                     </label>
-                    <input
-                      type="text"
+                    <select
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                       required
-                      className="w-full px-4 py-2 glass rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-                      placeholder="e.g., groceries, Combo Poulet"
-                    />
+                      className="w-full px-4 py-2 glass rounded-lg text-gray-900 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+                    >
+                      <option value="">Select a category</option>
+                      {/* Include groceries (capitalized) */}
+                      <option value="groceries">Groceries</option>
+                      {/* Include all other existing categories */}
+                      {categories
+                        .filter(cat => cat.toLowerCase() !== 'groceries')
+                        .map((category) => (
+                          <option key={category} value={category}>
+                            {category}
+                          </option>
+                        ))}
+                      {/* Option to add new category */}
+                      <option value="__new__">+ Add New Category</option>
+                    </select>
+                    {/* Show input field if "Add New Category" is selected */}
+                    {formData.category === '__new__' && (
+                      <input
+                        type="text"
+                        value={formData.newCategory || ''}
+                        onChange={(e) => {
+                          setFormData({ 
+                            ...formData, 
+                            newCategory: e.target.value
+                          })
+                        }}
+                        placeholder="Enter new category name"
+                        className="w-full mt-2 px-4 py-2 glass rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+                        autoFocus
+                        required
+                      />
+                    )}
                   </div>
                 </div>
 
@@ -659,9 +716,11 @@ export default function AdminProducts() {
         className="glass-panel"
       >
         <h3 className="text-2xl font-bold text-gray-900 mb-6">
-          {activeTab === 'all' && 'All Products'}
-          {activeTab === 'groceries' && 'Groceries'}
-          {activeTab === 'others' && 'Other Products'}
+          {activeTab === 'all' 
+            ? 'All Products' 
+            : activeTab.toLowerCase() === 'groceries' 
+              ? 'Groceries' 
+              : activeTab.charAt(0).toUpperCase() + activeTab.slice(1).toLowerCase()}
           {` (${filteredProducts.length})`}
         </h3>
 

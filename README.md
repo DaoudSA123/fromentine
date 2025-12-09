@@ -58,6 +58,16 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
 # Google Places API Key (for address autocomplete)
 NEXT_PUBLIC_GOOGLE_PLACES_API_KEY=your_google_places_api_key_here
+
+# EmailJS Configuration (for contact form)
+NEXT_PUBLIC_EMAILJS_SERVICE_ID=your_service_id_here
+NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=your_template_id_here
+NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=your_public_key_here
+
+# Stripe Configuration (for payments)
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
 ```
 
 You can find these values in your Supabase project settings:
@@ -75,6 +85,52 @@ You can find these values in your Supabase project settings:
 4. Go to **Credentials** → **Create Credentials** → **API Key**
 5. Copy your API key and add it to `.env.local` as `NEXT_PUBLIC_GOOGLE_PLACES_API_KEY`
 6. (Optional) Restrict the API key to only allow requests from your domain for security
+
+**EmailJS Setup (for Contact Form):**
+1. Sign up for a free account at [EmailJS](https://www.emailjs.com/)
+2. Go to **Email Services** → **Add New Service**
+   - Choose your email provider (Gmail, Outlook, etc.)
+   - Follow the setup instructions to connect your email
+   - Copy the **Service ID** → `NEXT_PUBLIC_EMAILJS_SERVICE_ID`
+3. Go to **Email Templates** → **Create New Template**
+   - Template name: "Contact Form"
+   - Subject: `New Contact Form Submission from {{from_name}}`
+   - Content example:
+     ```
+     Name: {{from_name}}
+     Email: {{from_email}}
+     Phone: {{phone}}
+     
+     Message:
+     {{message}}
+     ```
+   - Copy the **Template ID** → `NEXT_PUBLIC_EMAILJS_TEMPLATE_ID`
+4. Go to **Account** → **General** → **API Keys**
+   - Copy your **Public Key** → `NEXT_PUBLIC_EMAILJS_PUBLIC_KEY`
+5. Add all three values to your `.env.local` file
+
+**Stripe Setup (for Payments):**
+1. Sign up for a Stripe account at [stripe.com](https://stripe.com)
+2. Go to **Developers** → **API keys**
+   - Copy your **Secret key** (starts with `sk_test_` for test mode) → `STRIPE_SECRET_KEY`
+   - Keep this key secret! Never commit it to git.
+3. Set up webhooks:
+   - Go to **Developers** → **Webhooks**
+   - Click **Add endpoint**
+   - Endpoint URL: `https://yourdomain.com/api/webhook/payment` (use your production URL)
+   - For local testing, use [Stripe CLI](https://stripe.com/docs/stripe-cli) to forward webhooks:
+     ```bash
+     stripe listen --forward-to localhost:3000/api/webhook/payment
+     ```
+   - Select events to listen to:
+     - `checkout.session.completed`
+     - `checkout.session.async_payment_succeeded`
+     - `checkout.session.async_payment_failed`
+   - Copy the **Signing secret** (starts with `whsec_`) → `STRIPE_WEBHOOK_SECRET`
+4. Set your base URL:
+   - For development: `NEXT_PUBLIC_BASE_URL=http://localhost:3000`
+   - For production: `NEXT_PUBLIC_BASE_URL=https://yourdomain.com`
+5. Add all Stripe values to your `.env.local` file
 
 ### 4. Create Admin User
 
@@ -160,12 +216,12 @@ Fromentine/
 
 ## API Routes
 
-- `POST /api/orders/create` - Create a new order (server-side, uses service_role)
+- `POST /api/stripe/create-checkout-session` - Create Stripe checkout session and order
+- `POST /api/webhook/payment` - Stripe webhook handler for payment events
 - `GET /api/orders/[id]` - Fetch order details
-- `POST /api/contact` - Submit catering contact form
+- `POST /api/contact` - Submit catering contact form (deprecated - now uses EmailJS)
 - `PATCH /api/admin/orders/[id]/status` - Update order status (admin only)
 - `PATCH /api/admin/products/[id]/inventory` - Update product inventory (admin only)
-- `POST /api/webhook/payment` - Payment webhook (TODO: integrate Stripe)
 
 ## Deployment to Vercel
 
@@ -209,6 +265,9 @@ Before deploying, ensure you have:
 - [ ] `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anon/public key
 - [ ] `SUPABASE_SERVICE_ROLE_KEY` - Supabase service_role key (server-side only)
 - [ ] `NEXT_PUBLIC_GOOGLE_PLACES_API_KEY` - Google Places API key (for address autocomplete)
+- [ ] `NEXT_PUBLIC_EMAILJS_SERVICE_ID` - EmailJS Service ID (for contact form)
+- [ ] `NEXT_PUBLIC_EMAILJS_TEMPLATE_ID` - EmailJS Template ID (for contact form)
+- [ ] `NEXT_PUBLIC_EMAILJS_PUBLIC_KEY` - EmailJS Public Key (for contact form)
 
 ## Security Notes
 

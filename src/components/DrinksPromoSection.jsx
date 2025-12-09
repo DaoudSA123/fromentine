@@ -42,7 +42,7 @@ export default function DrinksPromoSection() {
             className="glass-button inline-block !bg-orange-400 hover:!bg-orange-500 active:!bg-orange-500 text-black px-10 py-5 text-lg font-bold rounded-xl shadow-lg shadow-orange-400/30 transition-all duration-300 flex items-center gap-3 mx-auto"
             aria-label="Visit drinks promotion website"
           >
-            <span>View Drinks Menu</span>
+            <span>View Drinks Website</span>
             <ArrowRight className="w-5 h-5" />
           </motion.a>
         </motion.div>

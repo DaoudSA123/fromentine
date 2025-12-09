@@ -18,7 +18,30 @@ export function createBrowserClient() {
   }
 
   // Create and cache the client instance
-  browserClient = createClient(supabaseUrl, supabaseAnonKey)
+  browserClient = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: false,
+      // Suppress auth errors in console unless explicitly handled
+      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    },
+    global: {
+      headers: { 'x-client-info': 'fromentine-web' },
+    },
+  })
+
+  // Handle auth state changes and errors silently
+  if (typeof window !== 'undefined') {
+    browserClient.auth.onAuthStateChange((event, session) => {
+      // Only log errors if they're not refresh token related (common on page load)
+      if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+        // These are normal events, don't log
+        return
+      }
+    })
+  }
+
   return browserClient
 }
 

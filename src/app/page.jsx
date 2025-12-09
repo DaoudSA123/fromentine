@@ -93,14 +93,14 @@ export default function Home() {
       <GroceriesSection />
       <PromotionsSection />
       {/* Combined Video and Drinks Section - Side by side on desktop */}
-      <section className="w-full relative bg-orange-400" style={{ minHeight: '500px' }}>
-        <div className="flex flex-col lg:flex-row xl:flex-col gap-4 lg:gap-6" style={{ minHeight: '500px', height: '100%' }}>
-          {/* Video Banner - First on mobile, Right side on desktop, Hidden on xl+ */}
-          <div className="w-full lg:w-1/2 xl:hidden flex items-center justify-center py-4 lg:py-6 order-1 lg:order-2" style={{ minHeight: '400px' }}>
+      <section className="w-full relative bg-orange-400" style={{ minHeight: '600px' }}>
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 h-full" style={{ minHeight: '600px' }}>
+          {/* Video Banner - First on mobile, Right side on desktop, Always visible */}
+          <div className="w-full lg:w-1/2 flex items-center justify-center py-4 lg:py-6 xl:py-8 order-1 lg:order-2">
             <VideoBanner />
           </div>
-          {/* Drinks Promotion - Second on mobile, Left side on desktop, Full width on xl+ */}
-          <div className="w-full lg:w-1/2 xl:w-full flex items-center justify-center py-8 lg:py-6 order-2 lg:order-1">
+          {/* Drinks Promotion - Second on mobile, Left side on desktop */}
+          <div className="w-full lg:w-1/2 flex items-center justify-center py-8 lg:py-6 xl:py-8 order-2 lg:order-1">
             <DrinksPromoSection />
           </div>
         </div>

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Phone, MessageSquare, Send, CheckCircle2, AlertCircle } from 'lucide-react'
+import emailjs from '@emailjs/browser'
 
 export default function ContactSection() {
   const [formData, setFormData] = useState({
@@ -14,10 +15,38 @@ export default function ContactSection() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState(null)
 
+  // Format phone number as user types: (555) 123-4567
+  function formatPhoneNumber(value) {
+    // Remove all non-digit characters
+    const phoneNumber = value.replace(/\D/g, '')
+    
+    // Format based on length
+    if (phoneNumber.length === 0) return ''
+    if (phoneNumber.length <= 3) return `(${phoneNumber}`
+    if (phoneNumber.length <= 6) return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`
+    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`
+  }
+
+  // Validate and format name (letters, spaces, hyphens, apostrophes only)
+  function formatName(value) {
+    // Allow letters, spaces, hyphens, and apostrophes
+    return value.replace(/[^a-zA-Z\s'-]/g, '')
+  }
+
   function handleChange(e) {
+    const { name, value } = e.target
+    let formattedValue = value
+
+    // Apply formatting based on input type
+    if (name === 'phone') {
+      formattedValue = formatPhoneNumber(value)
+    } else if (name === 'name') {
+      formattedValue = formatName(value)
+    }
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: formattedValue,
     })
   }
 
@@ -27,20 +56,41 @@ export default function ContactSection() {
     setSubmitStatus(null)
 
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      })
+      // EmailJS configuration - get from environment variables
+      const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID
+      const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID
+      const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
 
-      if (!response.ok) {
-        throw new Error('Failed to submit contact form')
+      // Validate EmailJS configuration
+      if (!serviceId || !templateId || !publicKey) {
+        throw new Error('EmailJS configuration is missing. Please check your environment variables.')
       }
 
-      setSubmitStatus('success')
-      setFormData({ name: '', email: '', phone: '', message: '' })
+      // Prepare template parameters for EmailJS
+      const templateParams = {
+        from_name: formData.name,
+        from_email: formData.email,
+        phone: formData.phone || 'Not provided',
+        message: formData.message,
+        to_name: 'Fromentine Restaurant', // Your business name
+        reply_to: formData.email, // Allows reply-to functionality
+      }
+
+      // Send email using EmailJS
+      const response = await emailjs.send(
+        serviceId,
+        templateId,
+        templateParams,
+        publicKey
+      )
+
+      // Check if email was sent successfully
+      if (response.status === 200) {
+        setSubmitStatus('success')
+        setFormData({ name: '', email: '', phone: '', message: '' })
+      } else {
+        throw new Error('Failed to send email')
+      }
     } catch (error) {
       console.error('Contact form error:', error)
       setSubmitStatus('error')
@@ -50,8 +100,8 @@ export default function ContactSection() {
   }
 
   return (
-    <section id="contact" className="section-spacing relative bg-white bg-subtle-pattern">
-      <div className="container mx-auto px-6 md:px-8 relative z-10">
+    <section id="contact" className="section-spacing relative bg-white bg-subtle-pattern" style={{ position: 'relative' }}>
+      <div className="container mx-auto px-6 md:px-8 relative z-10" style={{ position: 'relative' }}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -91,8 +141,12 @@ export default function ContactSection() {
                 value={formData.name}
                 onChange={handleChange}
                 required
+                pattern="[a-zA-Z\s'-]+"
+                minLength={2}
+                maxLength={50}
                 className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
-                placeholder="Your name"
+                placeholder="Your full name"
+                title="Please enter a valid name (letters, spaces, hyphens, and apostrophes only)"
               />
             </div>
 
@@ -109,8 +163,11 @@ export default function ContactSection() {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$"
+                autoComplete="email"
                 className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
                 placeholder="your.email@example.com"
+                title="Please enter a valid email address (e.g., name@example.com)"
               />
             </div>
 
@@ -125,8 +182,12 @@ export default function ContactSection() {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
+                pattern="[\(]?[0-9]{3}[\)]?[\s\-]?[0-9]{3}[\s\-]?[0-9]{4}"
+                maxLength={14}
+                autoComplete="tel"
                 className="w-full px-5 py-4 glass rounded-xl text-gray-900 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:outline-none transition-all duration-300 text-base"
                 placeholder="(555) 123-4567"
+                title="Please enter a valid phone number (e.g., (555) 123-4567)"
               />
             </div>
 

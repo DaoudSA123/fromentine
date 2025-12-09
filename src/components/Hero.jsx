@@ -4,115 +4,114 @@ import { motion } from 'framer-motion'
 import { useEffect, useRef } from 'react'
 
 export default function Hero() {
-  const video1Ref = useRef(null)
-  const video2Ref = useRef(null)
-  const activeVideoRef = useRef(1)
-  const loopCountRef = useRef(0)
+  const videoRef = useRef(null)
 
   useEffect(() => {
-    const video1 = video1Ref.current
-    const video2 = video2Ref.current
-    if (!video1 || !video2) return
+    const video = videoRef.current
+    if (!video) return
 
-    let isTransitioning = false
-    let lastCheckTime = 0
-    const CHECK_INTERVAL = 100 // Check every 100ms instead of every frame
+    // Force hardware acceleration on desktop browsers
+    // This helps with performance on PC
+    video.setAttribute('playsinline', '')
+    video.setAttribute('webkit-playsinline', '')
+    
+    // Optimize video settings for desktop
+    video.playsInline = true
 
-    const switchVideos = () => {
-      if (isTransitioning) return
-      isTransitioning = true
-
-      const currentVideo = activeVideoRef.current === 1 ? video1 : video2
-      const nextVideo = activeVideoRef.current === 1 ? video2 : video1
-
-      // Reset and prepare next video
-      nextVideo.currentTime = 0
-      nextVideo.style.opacity = '0'
-      
-      // Start next video
-      nextVideo.play().catch(() => {})
-
-      // Crossfade transition
-      const fadeDuration = 200 // 200ms crossfade
-      const startTime = Date.now()
-      
-      const fade = () => {
-        const elapsed = Date.now() - startTime
-        const progress = Math.min(elapsed / fadeDuration, 1)
-        
-        currentVideo.style.opacity = String(1 - progress)
-        nextVideo.style.opacity = String(progress)
-
-        if (progress < 1) {
-          requestAnimationFrame(fade)
-        } else {
-          // Transition complete
-          currentVideo.pause()
-          currentVideo.currentTime = 0
-          activeVideoRef.current = activeVideoRef.current === 1 ? 2 : 1
-          isTransitioning = false
-          loopCountRef.current++
+    // Ensure video plays and loops smoothly
+    const ensurePlaying = () => {
+      if (video.paused && !video.ended) {
+        const playPromise = video.play()
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            // Retry if play fails
+            setTimeout(() => video.play().catch(() => {}), 100)
+          })
         }
       }
-
-      requestAnimationFrame(fade)
     }
 
-    const checkVideoProgress = () => {
-      const now = Date.now()
-      if (now - lastCheckTime < CHECK_INTERVAL) return
-      lastCheckTime = now
+    // Handle video errors
+    const handleError = () => {
+      console.warn('Video failed to load - using fallback background')
+    }
 
-      const currentVideo = activeVideoRef.current === 1 ? video1 : video2
-      if (currentVideo.duration && currentVideo.currentTime >= currentVideo.duration - 0.5) {
-        switchVideos()
+    // Auto-resume if paused unexpectedly (but not on mobile to save battery)
+    const handlePause = () => {
+      if (!video.ended) {
+        // Only auto-resume on desktop (not mobile to save battery)
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+        if (!isMobile) {
+          setTimeout(ensurePlaying, 100)
+        }
       }
     }
 
-    const handleTimeUpdate1 = () => {
-      if (activeVideoRef.current === 1) checkVideoProgress()
-    }
-
-    const handleTimeUpdate2 = () => {
-      if (activeVideoRef.current === 2) checkVideoProgress()
-    }
-
-    // Start first video
-    const startVideo1 = () => {
-      if (video1.readyState >= 2) {
-        video1.play().catch(() => {})
-        video1.style.opacity = '1'
+    // Handle video stalling (common on desktop browsers)
+    const handleStalled = () => {
+      if (!video.ended && video.paused) {
+        video.play().catch(() => {})
       }
     }
 
-    // Load both videos
-    if (video1.readyState >= 2) {
-      startVideo1()
+    // Handle waiting (buffering) - reduce lag
+    const handleWaiting = () => {
+      // Video is buffering, ensure it continues when ready
+      video.addEventListener('canplay', () => {
+        if (video.paused) {
+          video.play().catch(() => {})
+        }
+      }, { once: true })
+    }
+
+    video.addEventListener('error', handleError)
+    video.addEventListener('pause', handlePause)
+    video.addEventListener('stalled', handleStalled)
+    video.addEventListener('waiting', handleWaiting)
+
+    // Start playing when ready - use canplaythrough for better desktop performance
+    if (video.readyState >= 3) {
+      video.play().catch(() => {})
     } else {
-      video1.addEventListener('loadeddata', startVideo1, { once: true })
+      // Wait for enough data to play smoothly
+      video.addEventListener('canplaythrough', () => {
+        video.play().catch(() => {})
+      }, { once: true })
+      
+      // Fallback to canplay if canplaythrough takes too long
+      const canplayTimeout = setTimeout(() => {
+        if (video.readyState >= 2) {
+          video.play().catch(() => {})
+        }
+      }, 2000)
+      
+      video.addEventListener('canplay', () => {
+        clearTimeout(canplayTimeout)
+      }, { once: true })
     }
-
-    video1.addEventListener('timeupdate', handleTimeUpdate1)
-    video2.addEventListener('timeupdate', handleTimeUpdate2)
 
     return () => {
-      video1.removeEventListener('timeupdate', handleTimeUpdate1)
-      video2.removeEventListener('timeupdate', handleTimeUpdate2)
-      video1.removeEventListener('loadeddata', startVideo1)
+      video.removeEventListener('error', handleError)
+      video.removeEventListener('pause', handlePause)
+      video.removeEventListener('stalled', handleStalled)
+      video.removeEventListener('waiting', handleWaiting)
     }
   }, [])
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Video - Dual video setup for seamless looping */}
-      <div className="absolute inset-0 w-full h-full z-0" style={{ transform: 'translateZ(0)', willChange: 'transform' }}>
+      {/* Background Video - Single video with native loop for best performance */}
+      <div className="absolute inset-0 w-full h-full z-0">
+        {/* Fallback background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-400 via-orange-500 to-yellow-500" />
+        
         <video
-          ref={video1Ref}
+          ref={videoRef}
           autoPlay
           muted
           playsInline
           loop
-          preload="auto"
+          preload="metadata"
           className="w-full h-full object-cover"
           style={{ 
             position: 'absolute', 
@@ -121,42 +120,22 @@ export default function Hero() {
             width: '100%', 
             height: '100%',
             pointerEvents: 'none',
+            zIndex: 1,
+            // Force hardware acceleration on desktop
             transform: 'translateZ(0)',
-            willChange: 'auto',
+            WebkitTransform: 'translateZ(0)',
+            willChange: 'transform',
+            // Optimize for desktop rendering
+            imageRendering: 'auto',
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
-            opacity: 1,
-            transition: 'opacity 0.2s ease-in-out'
+            perspective: '1000px'
           }}
         >
-          <source src="/videos/bgVideo.mov" type="video/quicktime" />
-          <source src="/videos/bgVideo.mov" type="video/mp4" />
-        </video>
-        <video
-          ref={video2Ref}
-          autoPlay
-          muted
-          playsInline
-          loop
-          preload="auto"
-          className="w-full h-full object-cover"
-          style={{ 
-            position: 'absolute', 
-            top: 0, 
-            left: 0, 
-            width: '100%', 
-            height: '100%',
-            pointerEvents: 'none',
-            transform: 'translateZ(0)',
-            willChange: 'auto',
-            backfaceVisibility: 'hidden',
-            WebkitBackfaceVisibility: 'hidden',
-            opacity: 0,
-            transition: 'opacity 0.2s ease-in-out'
-          }}
-        >
-          <source src="/videos/bgVideo.mov" type="video/quicktime" />
-          <source src="/videos/bgVideo.mov" type="video/mp4" />
+          {/* WebM first for better performance on desktop browsers */}
+          <source src="/videos/bgVIDEO.webm" type="video/webm" />
+          {/* MP4 fallback for Safari and older browsers - keep this file! */}
+          <source src="/videos/bgVideo.mp4" type="video/mp4" />
         </video>
       </div>
       

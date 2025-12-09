@@ -203,7 +203,8 @@ export default function OrderSection() {
     }
 
     try {
-      const response = await fetch('/api/orders/create', {
+      // Create Stripe checkout session
+      const response = await fetch('/api/stripe/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -216,17 +217,22 @@ export default function OrderSection() {
 
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.message || 'Failed to create order')
+        throw new Error(error.message || 'Failed to create checkout session')
       }
 
-      const { orderId } = await response.json()
+      const { url, orderId } = await response.json()
 
-      // Clear cart
+      // Clear cart before redirecting to Stripe
       localStorage.removeItem('fromentine_cart')
       setCart([])
 
-      // Redirect to tracking page
-      router.push(`/track/${orderId}`)
+      // Redirect to Stripe Checkout
+      if (url) {
+        window.location.href = url
+      } else {
+        // Fallback: redirect to tracking page if no Stripe URL
+        router.push(`/track/${orderId}`)
+      }
     } catch (error) {
       console.error('Checkout error:', error)
       throw error
@@ -386,7 +392,7 @@ export default function OrderSection() {
           style={{ height: '250px' }}
         >
           {/* First Video */}
-          <div className="flex-1 h-full overflow-hidden">
+          <div className="flex-1 h-full overflow-hidden bg-gradient-to-br from-orange-400 to-yellow-500 relative">
             <video
               ref={video1Ref}
               autoPlay
@@ -395,15 +401,29 @@ export default function OrderSection() {
               playsInline
               preload="auto"
               className="w-full h-full object-cover"
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+              onEnded={(e) => {
+                // Ensure video restarts if loop fails
+                e.target.currentTime = 0
+                e.target.play().catch(() => {})
+              }}
+              onPause={(e) => {
+                // Auto-resume if paused unexpectedly (but not if ended)
+                if (!e.target.ended) {
+                  e.target.play().catch(() => {})
+                }
+              }}
             >
-              <source src="/videos/MVI_5110.mov" type="video/quicktime" />
-              <source src="/videos/MVI_5110.mov" type="video/mp4" />
+              {/* WebM first for better performance on desktop browsers */}
+              <source src="/videos/MVI_5110.webm" type="video/webm" />
+              {/* MP4 fallback for Safari and older browsers */}
+              <source src="/videos/MVI_5110.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           </div>
           
           {/* Second Video */}
-          <div className="flex-1 h-full overflow-hidden">
+          <div className="flex-1 h-full overflow-hidden bg-gradient-to-br from-orange-400 to-yellow-500 relative">
             <video
               ref={video2Ref}
               autoPlay
@@ -412,9 +432,23 @@ export default function OrderSection() {
               playsInline
               preload="auto"
               className="w-full h-full object-cover"
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+              onEnded={(e) => {
+                // Ensure video restarts if loop fails
+                e.target.currentTime = 0
+                e.target.play().catch(() => {})
+              }}
+              onPause={(e) => {
+                // Auto-resume if paused unexpectedly (but not if ended)
+                if (!e.target.ended) {
+                  e.target.play().catch(() => {})
+                }
+              }}
             >
-              <source src="/videos/MVI_5112.mov" type="video/quicktime" />
-              <source src="/videos/MVI_5112.mov" type="video/mp4" />
+              {/* WebM first for better performance on desktop browsers */}
+              <source src="/videos/MVI_5112.webm" type="video/webm" />
+              {/* MP4 fallback for Safari and older browsers */}
+              <source src="/videos/MVI_5112.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           </div>
