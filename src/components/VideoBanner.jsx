@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 
 export default function VideoBanner() {
   return (
-    <div className="w-full h-full flex items-center justify-center p-4 md:p-6 lg:p-8">
+    <div className="w-full h-full flex items-center justify-center p-4 md:p-6 lg:p-8" style={{ position: 'relative' }}>
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
@@ -15,14 +15,17 @@ export default function VideoBanner() {
         <img
           src="/images/bissap.webp"
           alt="Bissap drink"
-          className="max-w-full max-h-full w-auto h-auto object-contain rounded-2xl shadow-2xl"
+          className="rounded-2xl shadow-2xl"
           style={{
-            minHeight: '300px',
-            minWidth: '200px',
-            maxHeight: '600px',
+            maxWidth: '85%',
+            maxHeight: '85%',
+            width: 'auto',
+            height: 'auto',
+            objectFit: 'contain',
+            objectPosition: 'center',
             imageRendering: 'high-quality',
             WebkitImageRendering: 'high-quality',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
           }}
           onError={(e) => {
             console.error('Image failed to load:', e.target.src)

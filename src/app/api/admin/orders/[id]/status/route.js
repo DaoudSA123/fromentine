@@ -16,7 +16,7 @@ export async function PATCH(request, { params }) {
     const resolvedParams = await params
     const { id } = resolvedParams
     const body = await request.json()
-    const { status } = body
+    const { status, cancel_reason } = body
 
     if (!id) {
       return NextResponse.json({ error: 'Order ID required' }, { status: 400 })
@@ -37,9 +37,35 @@ export async function PATCH(request, { params }) {
 
     const supabase = createServerClient()
 
+    // Check current order status - prevent cancelling completed orders
+    const { data: currentOrder } = await supabase
+      .from('orders')
+      .select('status')
+      .eq('id', id)
+      .single()
+
+    if (!currentOrder) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+    }
+
+    if (status === 'CANCELLED' && currentOrder.status === 'COMPLETED') {
+      return NextResponse.json(
+        { error: 'Cannot cancel a completed order' },
+        { status: 400 }
+      )
+    }
+
+    // Prepare update data
+    const updateData = { status }
+    if (status === 'CANCELLED' && cancel_reason) {
+      // Store cancel reason if provided (you may need to add this column to your orders table)
+      // For now, we'll just log it. You can add a cancel_reason column if needed.
+      console.log(`Order ${id} cancelled. Reason: ${cancel_reason}`)
+    }
+
     const { data, error } = await supabase
       .from('orders')
-      .update({ status })
+      .update(updateData)
       .eq('id', id)
       .select()
       .single()

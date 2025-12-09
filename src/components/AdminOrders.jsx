@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createBrowserClient } from '@/lib/supabase'
-import { X, MapPin, Phone, User, Calendar, Package, DollarSign } from 'lucide-react'
+import { X, MapPin, Phone, User, Calendar, Package, DollarSign, AlertTriangle } from 'lucide-react'
 
 const STATUS_OPTIONS = [
   'RECEIVED',
@@ -21,6 +21,9 @@ export default function AdminOrders() {
   const [updateError, setUpdateError] = useState(null)
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [showModal, setShowModal] = useState(false)
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
+  const [orderToCancel, setOrderToCancel] = useState(null)
+  const [cancelReason, setCancelReason] = useState('')
   const channelRef = useRef(null)
 
   useEffect(() => {
@@ -139,10 +142,41 @@ export default function AdminOrders() {
     }
   }
 
-  async function updateOrderStatus(orderId, newStatus) {
+  function handleCancelClick(order, e) {
+    e.stopPropagation()
+    setOrderToCancel(order)
+    setShowCancelConfirm(true)
+  }
+
+  async function confirmCancel() {
+    if (!orderToCancel) return
+
+    await updateOrderStatus(orderToCancel.id, 'CANCELLED', cancelReason)
+    setShowCancelConfirm(false)
+    setOrderToCancel(null)
+    setCancelReason('')
+    
+    // Close modal if the cancelled order was selected
+    if (selectedOrder?.id === orderToCancel.id) {
+      setShowModal(false)
+      setSelectedOrder(null)
+    }
+  }
+
+  async function updateOrderStatus(orderId, newStatus, reason = null) {
+    // Prevent cancelling completed orders
+    const orderToUpdate = orders.find(o => o.id === orderId)
+    if (newStatus === 'CANCELLED' && orderToUpdate?.status === 'COMPLETED') {
+      setUpdateError({
+        orderId,
+        message: 'Cannot cancel a completed order'
+      })
+      setTimeout(() => setUpdateError(null), 5000)
+      return
+    }
+
     // Store previous state for potential reversion
     const previousOrders = [...orders]
-    const orderToUpdate = orders.find(o => o.id === orderId)
     const previousStatus = orderToUpdate?.status
 
     // Optimistic update: immediately update UI
@@ -162,10 +196,15 @@ export default function AdminOrders() {
         headers['Authorization'] = `Bearer ${session.access_token}`
       }
 
+      const requestBody = { status: newStatus }
+      if (reason) {
+        requestBody.cancel_reason = reason
+      }
+
       const response = await fetch(`/api/admin/orders/${orderId}/status`, {
         method: 'PATCH',
         headers,
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify(requestBody),
       })
 
       if (!response.ok) {
@@ -176,6 +215,11 @@ export default function AdminOrders() {
       // Success: keep optimistic update, optionally refresh to get server state
       const { order } = await response.json()
       setOrders(orders.map(o => o.id === orderId ? {...order, order_items: orderToUpdate.order_items} : o))
+      
+      // Update selected order if it's the one being updated
+      if (selectedOrder?.id === orderId) {
+        setSelectedOrder({ ...selectedOrder, status: newStatus })
+      }
     } catch (error) {
       console.error('Error updating order status:', error)
       // Revert optimistic update on error
@@ -329,18 +373,40 @@ export default function AdminOrders() {
                     {formatDate(order.created_at)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm" onClick={(e) => e.stopPropagation()}>
-                    <select
-                      value={order.status}
-                      onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                      disabled={updatingStatus === order.id}
-                      className="glass rounded-lg px-3 py-2 text-sm text-gray-900 font-medium focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-                    >
-                      {STATUS_OPTIONS.map((status) => (
-                        <option key={status} value={status}>
-                          {status}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={order.status}
+                        onChange={(e) => {
+                          const newStatus = e.target.value
+                          if (newStatus === 'CANCELLED' && order.status !== 'CANCELLED') {
+                            setOrderToCancel(order)
+                            setShowCancelConfirm(true)
+                          } else {
+                            updateOrderStatus(order.id, newStatus)
+                          }
+                        }}
+                        disabled={updatingStatus === order.id || order.status === 'COMPLETED'}
+                        className="glass rounded-lg px-3 py-2 text-sm text-gray-900 font-medium focus:ring-2 focus:ring-yellow-500 focus:outline-none flex-1"
+                      >
+                        {STATUS_OPTIONS.map((status) => (
+                          <option key={status} value={status}>
+                            {status}
+                          </option>
+                        ))}
+                      </select>
+                      {order.status !== 'CANCELLED' && order.status !== 'COMPLETED' && (
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={(e) => handleCancelClick(order, e)}
+                          disabled={updatingStatus === order.id}
+                          className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Cancel Order"
+                        >
+                          Cancel
+                        </motion.button>
+                      )}
+                    </div>
                   </td>
                 </motion.tr>
               ))}
@@ -418,7 +484,7 @@ export default function AdminOrders() {
                       <p className="text-gray-900">{selectedOrder.customer_name}</p>
                     </div>
                     <div>
-                      <label className="text-sm font-semibold text-gray-700 mb-1 block flex items-center gap-1">
+                      <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1">
                         <Phone className="w-4 h-4" />
                         Phone
                       </label>
@@ -439,7 +505,7 @@ export default function AdminOrders() {
                       <p className="text-gray-900">{formatOrderType(selectedOrder.type)}</p>
                     </div>
                     <div>
-                      <label className="text-sm font-semibold text-gray-700 mb-1 block flex items-center gap-1">
+                      <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1">
                         <MapPin className="w-4 h-4" />
                         Location
                       </label>
@@ -448,7 +514,7 @@ export default function AdminOrders() {
                   </div>
                   {selectedOrder.type === 'delivery' && selectedOrder.customer_address && (
                     <div>
-                      <label className="text-sm font-semibold text-gray-700 mb-1 block flex items-center gap-1">
+                      <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1">
                         <MapPin className="w-4 h-4" />
                         Delivery Address
                       </label>
@@ -528,26 +594,135 @@ export default function AdminOrders() {
                 </div>
 
                 {/* Status Update (in modal) */}
-                <div className="pt-4 border-t border-gray-300">
-                  <label className="text-sm font-semibold text-gray-700 mb-2 block">
-                    Update Status
+                <div className="pt-4 border-t border-gray-300 space-y-4">
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                      Update Status
+                    </label>
+                    <div className="flex gap-2">
+                      <select
+                        value={selectedOrder.status}
+                        onChange={(e) => {
+                          const newStatus = e.target.value
+                          if (newStatus === 'CANCELLED' && selectedOrder.status !== 'CANCELLED') {
+                            setOrderToCancel(selectedOrder)
+                            setShowCancelConfirm(true)
+                          } else {
+                            updateOrderStatus(selectedOrder.id, newStatus)
+                            setSelectedOrder({ ...selectedOrder, status: newStatus })
+                          }
+                        }}
+                        disabled={updatingStatus === selectedOrder.id || selectedOrder.status === 'COMPLETED'}
+                        className="flex-1 glass rounded-lg px-4 py-2 text-sm text-gray-900 font-medium focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+                      >
+                        {STATUS_OPTIONS.map((status) => (
+                          <option key={status} value={status}>
+                            {status}
+                          </option>
+                        ))}
+                      </select>
+                      {selectedOrder.status !== 'CANCELLED' && selectedOrder.status !== 'COMPLETED' && (
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => {
+                            setOrderToCancel(selectedOrder)
+                            setShowCancelConfirm(true)
+                          }}
+                          disabled={updatingStatus === selectedOrder.id}
+                          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        >
+                          <X className="w-4 h-4" />
+                          Cancel Order
+                        </motion.button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Cancel Confirmation Modal */}
+      <AnimatePresence>
+        {showCancelConfirm && orderToCancel && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+            onClick={() => {
+              setShowCancelConfirm(false)
+              setOrderToCancel(null)
+              setCancelReason('')
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="glass-panel max-w-md w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-red-500/20 rounded-lg">
+                  <AlertTriangle className="w-6 h-6 text-red-500" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Cancel Order</h3>
+                  <p className="text-sm text-gray-600">Order ID: {orderToCancel.id.substring(0, 8)}</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <p className="text-gray-700 mb-4">
+                    Are you sure you want to cancel this order? This action cannot be undone.
+                  </p>
+                  <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                    <p className="text-sm text-gray-600 mb-1">Customer: {orderToCancel.customer_name}</p>
+                    <p className="text-sm text-gray-600 mb-1">Total: ${(orderToCancel.total_cents / 100).toFixed(2)}</p>
+                    <p className="text-sm text-gray-600">Status: {orderToCancel.status}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Reason for Cancellation (Optional)
                   </label>
-                  <select
-                    value={selectedOrder.status}
-                    onChange={(e) => {
-                      const newStatus = e.target.value
-                      updateOrderStatus(selectedOrder.id, newStatus)
-                      setSelectedOrder({ ...selectedOrder, status: newStatus })
+                  <textarea
+                    value={cancelReason}
+                    onChange={(e) => setCancelReason(e.target.value)}
+                    placeholder="Enter reason for cancellation..."
+                    rows={3}
+                    className="w-full px-4 py-2 glass rounded-lg text-gray-900 focus:ring-2 focus:ring-red-500 focus:outline-none resize-none"
+                  />
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      setShowCancelConfirm(false)
+                      setOrderToCancel(null)
+                      setCancelReason('')
                     }}
-                    disabled={updatingStatus === selectedOrder.id}
-                    className="w-full glass rounded-lg px-4 py-2 text-sm text-gray-900 font-medium focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+                    className="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-900 font-semibold rounded-lg transition-colors"
                   >
-                    {STATUS_OPTIONS.map((status) => (
-                      <option key={status} value={status}>
-                        {status}
-                      </option>
-                    ))}
-                  </select>
+                    Keep Order
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={confirmCancel}
+                    disabled={updatingStatus === orderToCancel.id}
+                    className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {updatingStatus === orderToCancel.id ? 'Cancelling...' : 'Confirm Cancel'}
+                  </motion.button>
                 </div>
               </div>
             </motion.div>

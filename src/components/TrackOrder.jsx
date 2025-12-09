@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createBrowserClient } from '@/lib/supabase'
+import { CheckCircle2, AlertCircle, CreditCard } from 'lucide-react'
 
 const STATUS_STEPS = [
   { key: 'RECEIVED', label: 'Order Received' },
@@ -13,6 +15,8 @@ const STATUS_STEPS = [
 ]
 
 const STATUS_ORDER = {
+  PENDING_PAYMENT: -2,
+  PAYMENT_FAILED: -3,
   RECEIVED: 0,
   PREPARING: 1,
   READY: 2,
@@ -22,12 +26,28 @@ const STATUS_ORDER = {
 }
 
 export default function TrackOrder({ orderId }) {
+  const searchParams = useSearchParams()
   const [order, setOrder] = useState(null)
   const [orderItems, setOrderItems] = useState([])
   const [location, setLocation] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [realtimeConnected, setRealtimeConnected] = useState(false)
+  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false)
+  const [showPaymentCancelled, setShowPaymentCancelled] = useState(false)
+
+  // Check for payment status in URL
+  useEffect(() => {
+    const payment = searchParams?.get('payment')
+    if (payment === 'success') {
+      setShowPaymentSuccess(true)
+      // Hide after 5 seconds
+      setTimeout(() => setShowPaymentSuccess(false), 5000)
+    } else if (payment === 'cancelled') {
+      setShowPaymentCancelled(true)
+      setTimeout(() => setShowPaymentCancelled(false), 5000)
+    }
+  }, [searchParams])
 
   useEffect(() => {
     if (!orderId) return
@@ -179,6 +199,52 @@ export default function TrackOrder({ orderId }) {
 
   return (
     <div className="container mx-auto px-4 py-16 max-w-4xl space-y-6">
+      {/* Payment Status Messages */}
+      <AnimatePresence>
+        {showPaymentSuccess && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="glass-strong bg-green-50 border-2 border-green-200 text-green-800 px-6 py-4 rounded-xl font-medium flex items-center gap-3"
+          >
+            <CheckCircle2 className="w-6 h-6" />
+            <span>Payment successful! Your order has been confirmed.</span>
+          </motion.div>
+        )}
+        {showPaymentCancelled && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="glass-strong bg-yellow-50 border-2 border-yellow-200 text-yellow-800 px-6 py-4 rounded-xl font-medium flex items-center gap-3"
+          >
+            <AlertCircle className="w-6 h-6" />
+            <span>Payment was cancelled. Your order is pending payment.</span>
+          </motion.div>
+        )}
+        {order?.status === 'PENDING_PAYMENT' && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-strong bg-blue-50 border-2 border-blue-200 text-blue-800 px-6 py-4 rounded-xl font-medium flex items-center gap-3"
+          >
+            <CreditCard className="w-6 h-6" />
+            <span>Payment pending. Please complete your payment to confirm your order.</span>
+          </motion.div>
+        )}
+        {order?.status === 'PAYMENT_FAILED' && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-strong bg-red-50 border-2 border-red-200 text-red-800 px-6 py-4 rounded-xl font-medium flex items-center gap-3"
+          >
+            <AlertCircle className="w-6 h-6" />
+            <span>Payment failed. Please try again or contact support.</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}

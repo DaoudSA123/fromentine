@@ -23,8 +23,8 @@ export default function PromotionsSection() {
   }
 
   return (
-    <section id="promotions" className="section-spacing relative bg-white bg-subtle-pattern">
-      <div className="container mx-auto px-6 md:px-8 relative z-10">
+    <section id="promotions" className="section-spacing relative bg-white bg-subtle-pattern" style={{ position: 'relative' }}>
+      <div className="container mx-auto px-6 md:px-8 relative z-10" style={{ position: 'relative' }}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

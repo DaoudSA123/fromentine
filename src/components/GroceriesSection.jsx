@@ -40,8 +40,8 @@ export default function GroceriesSection() {
   }
 
   return (
-    <section id="groceries" className="section-spacing relative bg-orange-400">
-      <div className="container mx-auto px-6 md:px-8 relative z-10">
+    <section id="groceries" className="section-spacing relative bg-orange-400" style={{ position: 'relative' }}>
+      <div className="container mx-auto px-6 md:px-8 relative z-10" style={{ position: 'relative' }}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
