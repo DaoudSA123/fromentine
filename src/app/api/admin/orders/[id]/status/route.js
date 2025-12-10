@@ -1,6 +1,7 @@
 import { createServerClient } from '@/lib/supabase'
 import { verifyAdminAuth } from '@/lib/auth'
 import { NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 
 const ALLOWED_STATUSES = [
   'RECEIVED',
@@ -60,7 +61,7 @@ export async function PATCH(request, { params }) {
     if (status === 'CANCELLED' && cancel_reason) {
       // Store cancel reason if provided (you may need to add this column to your orders table)
       // For now, we'll just log it. You can add a cancel_reason column if needed.
-      console.log(`Order ${id} cancelled. Reason: ${cancel_reason}`)
+      logger.log(`Order ${id} cancelled. Reason: ${cancel_reason}`)
     }
 
     const { data, error } = await supabase
@@ -71,7 +72,7 @@ export async function PATCH(request, { params }) {
       .single()
 
     if (error) {
-      console.error('Error updating order status:', error)
+      logger.error('Error updating order status:', error)
       return NextResponse.json(
         { error: 'Failed to update order status', details: error.message },
         { status: 500 }
@@ -90,7 +91,7 @@ export async function PATCH(request, { params }) {
       { status: 200 }
     )
   } catch (error) {
-    console.error('Unexpected error:', error)
+    logger.error('Unexpected error:', error)
     return NextResponse.json(
       { error: 'Internal server error', details: error.message },
       { status: 500 }

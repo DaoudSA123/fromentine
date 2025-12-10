@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createServerClient } from '@/lib/supabase'
+import { logger } from '@/lib/logger'
 
 export async function POST(request) {
   try {
@@ -73,7 +74,7 @@ export async function POST(request) {
       .single()
 
     if (orderError) {
-      console.error('Error creating order:', orderError)
+      logger.error('Error creating order:', orderError)
       return NextResponse.json(
         { error: 'Failed to create order', details: orderError.message },
         { status: 500 }
@@ -93,7 +94,7 @@ export async function POST(request) {
       .insert(orderItems)
 
     if (itemsError) {
-      console.error('Error creating order items:', itemsError)
+      logger.error('Error creating order items:', itemsError)
       // Delete the order if items failed
       await supabase.from('orders').delete().eq('id', order.id)
       return NextResponse.json(
@@ -147,7 +148,7 @@ export async function POST(request) {
       orderId: order.id,
     })
   } catch (error) {
-    console.error('Stripe checkout error:', error)
+    logger.error('Stripe checkout error:', error)
     return NextResponse.json(
       { error: 'Failed to create checkout session', details: error.message },
       { status: 500 }

@@ -1,6 +1,7 @@
 import { createServerClient } from '@/lib/supabase'
 import { verifyAdminAuth } from '@/lib/auth'
 import { NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 
 // PATCH - Update product
 export async function PATCH(request, { params }) {
@@ -76,7 +77,7 @@ export async function PATCH(request, { params }) {
       .single()
 
     if (error) {
-      console.error('Error updating product:', error)
+      logger.error('Error updating product:', error)
       return NextResponse.json(
         { error: 'Failed to update product', details: error.message },
         { status: 500 }
@@ -95,7 +96,7 @@ export async function PATCH(request, { params }) {
       { status: 200 }
     )
   } catch (error) {
-    console.error('Unexpected error:', error)
+    logger.error('Unexpected error:', error)
     return NextResponse.json(
       { error: 'Internal server error', details: error.message },
       { status: 500 }
@@ -157,7 +158,7 @@ export async function DELETE(request, { params }) {
       .eq('id', id)
 
     if (error) {
-      console.error('Error deleting product:', error)
+      logger.error('Error deleting product:', error)
       return NextResponse.json(
         { error: 'Failed to delete product', details: error.message },
         { status: 500 }
@@ -169,7 +170,7 @@ export async function DELETE(request, { params }) {
       { status: 200 }
     )
   } catch (error) {
-    console.error('Unexpected error:', error)
+    logger.error('Unexpected error:', error)
     return NextResponse.json(
       { error: 'Internal server error', details: error.message },
       { status: 500 }

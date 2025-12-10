@@ -13,11 +13,31 @@ export default function ProductCard({ product, onAddToCart, sizeOptions = null, 
   
   const hasSizes = sizeOptions && sizeOptions.length > 0
 
+  // Check if product is out of stock
+  // null/undefined = in stock (no tracking), 0 = out of stock, > 0 = in stock
+  const isOutOfStock = (productToCheck) => {
+    if (productToCheck.inventory_count === null || productToCheck.inventory_count === undefined) {
+      return false // null means in stock (no tracking)
+    }
+    return productToCheck.inventory_count === 0
+  }
+
+  // Check if current product/size is out of stock
+  const currentProductIsOutOfStock = isOutOfStock(displayProduct || product)
+
   const handleAddToCartClick = () => {
+    if (currentProductIsOutOfStock) {
+      return // Prevent adding out of stock items
+    }
+    
     const productToAdd = selectedSize && sizeOptions 
       ? sizeOptions.find(s => s.id === selectedSize)
       : product
-    onAddToCart(productToAdd)
+    
+    // Double check before adding
+    if (!isOutOfStock(productToAdd)) {
+      onAddToCart(productToAdd)
+    }
   }
 
   return (
@@ -57,22 +77,32 @@ export default function ProductCard({ product, onAddToCart, sizeOptions = null, 
           <div className="mb-4">
             <p className="text-sm font-semibold text-gray-700 mb-2">Size:</p>
             <div className="flex flex-wrap gap-2">
-              {sizeOptions.map((sizeOption) => (
-                <button
-                  key={sizeOption.id}
-                  onClick={() => setSelectedSize(sizeOption.id)}
-                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
-                    selectedSize === sizeOption.id
-                      ? 'bg-orange-400 text-gray-900 shadow-md scale-105'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {sizeOption.size || sizeOption.name.split(' ').pop()}
-                  <span className="ml-2 text-xs">
-                    (${((sizeOption.price_cents || 0) / 100).toFixed(2)})
-                  </span>
-                </button>
-              ))}
+              {sizeOptions.map((sizeOption) => {
+                const sizeIsOutOfStock = isOutOfStock(sizeOption)
+                return (
+                  <button
+                    key={sizeOption.id}
+                    onClick={() => !sizeIsOutOfStock && setSelectedSize(sizeOption.id)}
+                    disabled={sizeIsOutOfStock}
+                    className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                      sizeIsOutOfStock
+                        ? 'bg-gray-200 text-gray-400 cursor-not-allowed opacity-60 line-through'
+                        : selectedSize === sizeOption.id
+                        ? 'bg-orange-400 text-gray-900 shadow-md scale-105'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                    title={sizeIsOutOfStock ? 'Out of stock' : ''}
+                  >
+                    {sizeOption.size || sizeOption.name.split(' ').pop()}
+                    <span className="ml-2 text-xs">
+                      (${((sizeOption.price_cents || 0) / 100).toFixed(2)})
+                    </span>
+                    {sizeIsOutOfStock && (
+                      <span className="ml-1 text-xs text-red-500">(Out)</span>
+                    )}
+                  </button>
+                )
+              })}
             </div>
           </div>
         )}
@@ -82,27 +112,32 @@ export default function ProductCard({ product, onAddToCart, sizeOptions = null, 
             <span className="text-3xl font-bold text-gray-900">
               ${priceDollars}
             </span>
-            {product.inventory_count !== undefined && (
+            {/* Show inventory status only if inventory_count is explicitly set (not null) */}
+            {/* For non-groceries: null = in stock (no tracking), 0 = out of stock */}
+            {/* For groceries: 0 = out of stock, > 0 = in stock with count */}
+            {/* Show status for selected size if available, otherwise show base product status */}
+            {(displayProduct?.inventory_count !== null && displayProduct?.inventory_count !== undefined) || 
+             (product.inventory_count !== null && product.inventory_count !== undefined) ? (
               <p className="text-xs text-gray-600 mt-1 font-medium">
-                {product.inventory_count > 0
-                  ? `${product.inventory_count} in stock`
+                {(displayProduct?.inventory_count ?? product.inventory_count) > 0
+                  ? `${displayProduct?.inventory_count ?? product.inventory_count} in stock`
                   : 'Out of stock'}
               </p>
-            )}
+            ) : null}
           </div>
           
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={!currentProductIsOutOfStock && (!hasSizes || selectedSize) ? { scale: 1.05 } : {}}
+            whileTap={!currentProductIsOutOfStock && (!hasSizes || selectedSize) ? { scale: 0.95 } : {}}
             onClick={handleAddToCartClick}
-            disabled={hasSizes && !selectedSize}
+            disabled={currentProductIsOutOfStock || (hasSizes && !selectedSize)}
             className={`glass-button !bg-orange-400 hover:!bg-orange-500 active:!bg-orange-500 text-black px-5 py-3 font-bold rounded-xl shadow-md shadow-orange-400/30 transition-all duration-300 flex items-center gap-2 group/btn ${
-              hasSizes && !selectedSize ? 'opacity-50 cursor-not-allowed' : ''
+              currentProductIsOutOfStock || (hasSizes && !selectedSize) ? 'opacity-50 cursor-not-allowed' : ''
             }`}
-            aria-label={`Add ${baseProductName || product.name} to cart`}
+            aria-label={currentProductIsOutOfStock ? `${baseProductName || product.name} is out of stock` : `Add ${baseProductName || product.name} to cart`}
           >
             <ShoppingCart className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
-            <span>Add to Cart</span>
+            <span>{currentProductIsOutOfStock ? 'Out of Stock' : 'Add to Cart'}</span>
           </motion.button>
         </div>
       </div>

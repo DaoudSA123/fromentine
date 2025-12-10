@@ -1,6 +1,7 @@
 import { createServerClient } from '@/lib/supabase'
 import { verifyAdminAuth } from '@/lib/auth'
 import { NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 
 export async function PATCH(request, { params }) {
   try {
@@ -79,7 +80,7 @@ export async function PATCH(request, { params }) {
       .single()
 
     if (error) {
-      console.error('Error updating inventory:', error)
+      logger.error('Error updating inventory:', error)
       return NextResponse.json(
         { error: 'Failed to update inventory', details: error.message },
         { status: 500 }
@@ -94,7 +95,7 @@ export async function PATCH(request, { params }) {
       { status: 200 }
     )
   } catch (error) {
-    console.error('Unexpected error:', error)
+    logger.error('Unexpected error:', error)
     return NextResponse.json(
       { error: 'Internal server error', details: error.message },
       { status: 500 }

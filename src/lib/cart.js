@@ -31,11 +31,31 @@ export function saveCart(cart) {
 }
 
 /**
+ * Check if a product is out of stock
+ * @param {Object} product - Product object with inventory_count
+ * @returns {boolean} True if out of stock
+ */
+function isOutOfStock(product) {
+  // null/undefined = in stock (no tracking), 0 = out of stock, > 0 = in stock
+  if (product.inventory_count === null || product.inventory_count === undefined) {
+    return false // null means in stock (no tracking)
+  }
+  return product.inventory_count === 0
+}
+
+/**
  * Add item to cart
- * @param {Object} product - Product object with id, name, price_cents
+ * @param {Object} product - Product object with id, name, price_cents, inventory_count
  * @param {number} quantity - Quantity to add
+ * @returns {Array} Updated cart array, or original cart if product is out of stock
  */
 export function addToCart(product, quantity = 1) {
+  // Prevent adding out of stock items
+  if (isOutOfStock(product)) {
+    console.warn('Cannot add out of stock product to cart:', product.name)
+    return getCart() // Return current cart without changes
+  }
+
   const cart = getCart()
   // Create a unique key that includes product ID and size (if applicable)
   const itemKey = product.size ? `${product.id}_${product.size}` : product.id
