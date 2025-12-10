@@ -1,5 +1,6 @@
 import { createServerClient } from '@/lib/supabase'
 import { NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 
 export async function POST(request) {
   try {
@@ -85,7 +86,7 @@ export async function POST(request) {
       .single()
 
     if (orderError) {
-      console.error('Error creating order:', orderError)
+      logger.error('Error creating order:', orderError)
       return NextResponse.json(
         { error: 'Failed to create order', details: orderError.message },
         { status: 500 }
@@ -105,7 +106,7 @@ export async function POST(request) {
       .insert(orderItems)
 
     if (itemsError) {
-      console.error('Error creating order items:', itemsError)
+      logger.error('Error creating order items:', itemsError)
       // Try to delete the order if items failed
       await supabase.from('orders').delete().eq('id', order.id)
       return NextResponse.json(
@@ -125,7 +126,7 @@ export async function POST(request) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('Unexpected error:', error)
+    logger.error('Unexpected error:', error)
     return NextResponse.json(
       { error: 'Internal server error', details: error.message },
       { status: 500 }

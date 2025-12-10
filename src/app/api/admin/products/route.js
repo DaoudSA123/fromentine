@@ -1,6 +1,7 @@
 import { createServerClient } from '@/lib/supabase'
 import { verifyAdminAuth } from '@/lib/auth'
 import { NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 
 // GET - List all products with optional filtering
 export async function GET(request) {
@@ -35,7 +36,7 @@ export async function GET(request) {
     const { data, error } = await query
 
     if (error) {
-      console.error('Error fetching products:', error)
+      logger.error('Error fetching products:', error)
       return NextResponse.json(
         { error: 'Failed to fetch products', details: error.message },
         { status: 500 }
@@ -44,7 +45,7 @@ export async function GET(request) {
 
     return NextResponse.json({ products: data || [] }, { status: 200 })
   } catch (error) {
-    console.error('Unexpected error:', error)
+    logger.error('Unexpected error:', error)
     return NextResponse.json(
       { error: 'Internal server error', details: error.message },
       { status: 500 }
@@ -109,7 +110,7 @@ export async function POST(request) {
       .single()
 
     if (error) {
-      console.error('Error creating product:', error)
+      logger.error('Error creating product:', error)
       return NextResponse.json(
         { error: 'Failed to create product', details: error.message },
         { status: 500 }
@@ -124,12 +125,13 @@ export async function POST(request) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('Unexpected error:', error)
+    logger.error('Unexpected error:', error)
     return NextResponse.json(
       { error: 'Internal server error', details: error.message },
       { status: 500 }
     )
   }
 }
+
 
 

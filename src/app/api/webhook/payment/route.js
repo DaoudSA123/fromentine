@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createServerClient } from '@/lib/supabase'
+import { logger } from '@/lib/logger'
 
 export async function POST(request) {
   try {
@@ -13,7 +14,7 @@ export async function POST(request) {
     }
 
     if (!process.env.STRIPE_WEBHOOK_SECRET) {
-      console.error('STRIPE_WEBHOOK_SECRET is not set')
+      logger.error('STRIPE_WEBHOOK_SECRET is not set')
       return NextResponse.json(
         { error: 'Webhook secret not configured' },
         { status: 500 }
@@ -41,7 +42,7 @@ export async function POST(request) {
         process.env.STRIPE_WEBHOOK_SECRET
       )
     } catch (err) {
-      console.error('Webhook signature verification failed:', err.message)
+      logger.error('Webhook signature verification failed:', err.message)
       return NextResponse.json(
         { error: `Webhook Error: ${err.message}` },
         { status: 400 }
@@ -57,7 +58,7 @@ export async function POST(request) {
         const orderId = session.metadata?.orderId
 
         if (!orderId) {
-          console.error('Order ID not found in session metadata')
+          logger.error('Order ID not found in session metadata')
           break
         }
 
@@ -73,9 +74,9 @@ export async function POST(request) {
           .eq('id', parseInt(orderId))
 
         if (updateError) {
-          console.error('Error updating order status:', updateError)
+          logger.error('Error updating order status:', updateError)
         } else {
-          console.log(`Order ${orderId} payment confirmed and status updated`)
+          logger.log(`Order ${orderId} payment confirmed and status updated`)
         }
         break
       }
@@ -91,7 +92,7 @@ export async function POST(request) {
             .eq('id', parseInt(orderId))
 
           if (updateError) {
-            console.error('Error updating order status:', updateError)
+            logger.error('Error updating order status:', updateError)
           }
         }
         break
@@ -109,19 +110,19 @@ export async function POST(request) {
             .eq('id', parseInt(orderId))
 
           if (updateError) {
-            console.error('Error updating order status:', updateError)
+            logger.error('Error updating order status:', updateError)
           }
         }
         break
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`)
+        logger.log(`Unhandled event type: ${event.type}`)
     }
 
     return NextResponse.json({ received: true })
   } catch (error) {
-    console.error('Webhook error:', error)
+    logger.error('Webhook error:', error)
     return NextResponse.json(
       { error: 'Webhook handler failed', details: error.message },
       { status: 500 }

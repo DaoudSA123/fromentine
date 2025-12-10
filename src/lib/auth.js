@@ -1,5 +1,6 @@
 import { createServerClient } from './supabase'
 import { NextResponse } from 'next/server'
+import { logger } from './logger'
 
 /**
  * Verify that the request is from an authenticated admin user
@@ -46,7 +47,7 @@ export async function verifyAdminAuth(request) {
       error: null
     }
   } catch (error) {
-    console.error('Auth verification error:', error)
+    logger.error('Auth verification error:', error)
     return {
       user: null,
       error: NextResponse.json(

@@ -1,5 +1,6 @@
 import { createServerClient } from '@/lib/supabase'
 import { NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 
 export async function POST(request) {
   try {
@@ -41,7 +42,7 @@ export async function POST(request) {
       .single()
 
     if (error) {
-      console.error('Error creating contact:', error)
+      logger.error('Error creating contact:', error)
       return NextResponse.json(
         { error: 'Failed to submit contact form', details: error.message },
         { status: 500 }
@@ -56,13 +57,14 @@ export async function POST(request) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('Unexpected error:', error)
+    logger.error('Unexpected error:', error)
     return NextResponse.json(
       { error: 'Internal server error', details: error.message },
       { status: 500 }
     )
   }
 }
+
 
 
 
