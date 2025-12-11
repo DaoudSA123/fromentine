@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Phone, MessageSquare, Send, CheckCircle2, AlertCircle } from 'lucide-react'
 import emailjs from '@emailjs/browser'
@@ -14,6 +14,14 @@ export default function ContactSection() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState(null)
+
+  // Initialize EmailJS when component mounts
+  useEffect(() => {
+    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+    if (publicKey) {
+      emailjs.init(publicKey)
+    }
+  }, [])
 
   // Format phone number as user types: (555) 123-4567
   function formatPhoneNumber(value) {
@@ -76,7 +84,7 @@ export default function ContactSection() {
         reply_to: formData.email, // Allows reply-to functionality
       }
 
-      // Send email using EmailJS
+      // Send email using EmailJS (publicKey is already initialized, but passing it here as fallback)
       const response = await emailjs.send(
         serviceId,
         templateId,
